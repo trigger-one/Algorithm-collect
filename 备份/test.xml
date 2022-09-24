@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<parm>
+  <parms name="张三" class="三年一班">{"from":"en","to":"zh","trans_result":[{"src":"Editor API for the Unity Services editor feature. Normally UnityAds is enabled from the Services window, but if writing your own editor extension, this API can be used.","dst":"Unity Services\u7f16\u8f91\u5668\u529f\u80fd\u7684\u7f16\u8f91\u5668API\u3002\u901a\u5e38\u4ece\u670d\u52a1\u7a97\u53e3\u542f\u7528UnityAds\uff0c\u4f46\u5982\u679c\u7f16\u5199\u81ea\u5df1\u7684\u7f16\u8f91\u5668\u6269\u5c55\uff0c\u5219\u53ef\u4ee5\u4f7f\u7528\u6b64API\u3002"}]}</parms>
+</parm>

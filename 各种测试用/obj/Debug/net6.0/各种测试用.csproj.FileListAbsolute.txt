@@ -1,0 +1,15 @@
+D:\文档\C#练习\各种测试用\bin\Debug\net6.0\各种测试用.exe
+D:\文档\C#练习\各种测试用\bin\Debug\net6.0\各种测试用.deps.json
+D:\文档\C#练习\各种测试用\bin\Debug\net6.0\各种测试用.runtimeconfig.json
+D:\文档\C#练习\各种测试用\bin\Debug\net6.0\各种测试用.dll
+D:\文档\C#练习\各种测试用\bin\Debug\net6.0\ref\各种测试用.dll
+D:\文档\C#练习\各种测试用\bin\Debug\net6.0\各种测试用.pdb
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.csproj.AssemblyReference.cache
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.GeneratedMSBuildEditorConfig.editorconfig
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.AssemblyInfoInputs.cache
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.AssemblyInfo.cs
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.csproj.CoreCompileInputs.cache
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.dll
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\ref\各种测试用.dll
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.pdb
+D:\文档\C#练习\各种测试用\obj\Debug\net6.0\各种测试用.genruntimeconfig.cache
