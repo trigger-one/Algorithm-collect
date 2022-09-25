@@ -166,7 +166,7 @@ namespace Yan
         /// <param name="start">开始</param>
         /// <param name="end">结束(长度-1)</param>
         /// <returns></returns>
-        public int[]? quickSort(int[] a, int start, int end)
+        public int[] quickSort(int[] a, int start, int end)
         {
             if (a.Length < 1 || start < 0 || end >= a.Length || start > end) return null;
             int smallIndex = partition(a, start, end);
@@ -410,8 +410,6 @@ namespace Yan
         /// leetcode第4题，寻找两个正序数组的中位数
         /// 链接：https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/cban-guan-fang-jie-fa-by-shadowrabbit/
         /// </summary>
-        /// <param name="A"></param>
-        /// <param name="B"></param>
         /// <returns></returns>
         public double L_4_FindMedianSortedArrays(int[] A, int[] B)
         {
@@ -862,8 +860,8 @@ namespace Yan
         /// leetcode第25题，K个一组翻转列表
         /// 链接：https://leetcode-cn.com/problems/reverse-nodes-in-k-group/solution/cdi-gui-by-c7wwmd0j8s/
         /// </summary>
-        /// <param name="head"></param>
-        /// <param name="k"></param>
+        /// <param name="head">传入需要操作的数组</param>
+        /// <param name="k">需要反转的组长度</param>
         /// <returns></returns>
         public ListNode L_25_ReverseKGroup(ListNode head, int k)
         {
@@ -887,8 +885,8 @@ namespace Yan
         /// leetcode第26题，删除有序数组中的重复项
         /// 链接：https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/solution/kuai-man-zhi-zhen-26-shan-chu-you-xu-shu-8v6r/
         /// </summary>
-        /// <param name="nums"></param>
-        /// <returns></returns>
+        /// <param name="nums">传入需要操作的数组</param>
+        /// <returns>移除重复项后的数组</returns>
         public int L_26_RemoveDuplicates(int[] nums)
         {
             if (nums.Length == 0) { return 0; }
@@ -908,9 +906,9 @@ namespace Yan
         /// leetcode第27题，移除元素
         /// 链接：https://leetcode-cn.com/problems/remove-element/solution/c-100zui-jian-dan-de-fang-fa-by-v_chung-7itt/
         /// /// </summary>
-        /// <param name="nums"></param>
-        /// <param name="val"></param>
-        /// <returns></returns>
+        /// <param name="nums">传入需要操作的数组</param>
+        /// <param name="val">需要移除的元素数值</param>
+        /// <returns>移除数值完毕的数组</returns>
         public int L_27_RemoveElement(int[] nums, int val)
         {
             if (nums.Length == 0) return 0;
@@ -1102,7 +1100,7 @@ namespace Yan
         /// <param name="orign">数据来源</param>
         /// <param name="from">复制参数的初始下标</param>
         /// <param name="to">复制参数的终点下标(不包括该下标的值)</param>
-        private T[] Copy<T>(T[] orign, int from, int to)
+        public T[] Copy<T>(T[] orign, int from, int to)
         {
             if (from >= to || to > orign.Length) throw new Exception("超出索引");
             T[] targeta = new T[to - from];
@@ -1154,6 +1152,5 @@ namespace Yan
             }
             Console.WriteLine("");
         }
-
     }
 }
