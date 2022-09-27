@@ -8,7 +8,7 @@ namespace Yan
     {
         public int val;
         public ListNode? next;
-        public ListNode(int val = 0, ListNode? next = null)
+        public ListNode(int val, ListNode? next = null)
         {
             this.val = val;
             this.next = next;
@@ -844,12 +844,12 @@ namespace Yan
             ListNode newHead = new ListNode(-100);
             newHead.next = head;
             ListNode first = newHead;
-            ListNode? second = head;
+            ListNode second = head;
             ListNode? third = head.next;
             while (third != null && first != null && second != null)
             {
                 ListNode node = second;
-                node.next = third.next;
+                node.next = third.next!;
                 first.next = third;
                 third.next = node;
                 first = node;

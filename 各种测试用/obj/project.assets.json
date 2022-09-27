@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Administrator\\Documents\\C#练习\\Algorithm-collect\\各种测试用\\各种测试用.csproj",
+      "projectUniqueName": "D:\\文档\\C#练习\\各种测试用\\各种测试用.csproj",
       "projectName": "各种测试用",
-      "projectPath": "C:\\Users\\Administrator\\Documents\\C#练习\\Algorithm-collect\\各种测试用\\各种测试用.csproj",
+      "projectPath": "D:\\文档\\C#练习\\各种测试用\\各种测试用.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Administrator\\Documents\\C#练习\\Algorithm-collect\\各种测试用\\obj\\",
+      "outputPath": "D:\\文档\\C#练习\\各种测试用\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -49,8 +49,7 @@
           "net47",
           "net471",
           "net472",
-          "net48",
-          "net481"
+          "net48"
         ],
         "assetTargetFallback": true,
         "warn": true,
@@ -59,7 +58,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }
