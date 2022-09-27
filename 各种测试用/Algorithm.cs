@@ -942,7 +942,7 @@ namespace Yan
         }
         /// <summary>
         /// leetcode第29题，两数相除
-        /// 
+        /// https://leetcode.cn/problems/divide-two-integers/solution/liang-shu-xiang-chu-by-leetcode-solution-5hic/
         /// </summary>
         /// <param name="dividend"></param>
         /// <param name="divisor"></param>
@@ -1079,7 +1079,7 @@ namespace Yan
             }
             return res;
         }
-        
+
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
