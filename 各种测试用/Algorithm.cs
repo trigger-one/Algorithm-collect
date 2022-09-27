@@ -7,7 +7,7 @@ namespace Yan
     public class ListNode
     {
         public int val;
-        public ListNode next;
+        public ListNode? next;
         public ListNode(int val = 0, ListNode? next = null)
         {
             this.val = val;
@@ -169,7 +169,7 @@ namespace Yan
         /// <param name="start">开始</param>
         /// <param name="end">结束(长度-1)</param>
         /// <returns></returns>
-        public int[] quickSort(int[] a, int start, int end)
+        public int[]? quickSort(int[] a, int start, int end)
         {
             if (a.Length < 1 || start < 0 || end >= a.Length || start > end) return null;
             int smallIndex = partition(a, start, end);
@@ -366,7 +366,7 @@ namespace Yan
         /// 链接：https://leetcode-cn.com/problems/add-two-numbers/solution/cjie-ti-de-wan-zheng-dai-ma-bao-gua-sheng-cheng-ce/
         /// </summary>
         /// <returns></returns>
-        public ListNode L_2_AddTwoNumbers(ListNode? l1, ListNode? l2)
+        public ListNode? L_2_AddTwoNumbers(ListNode? l1, ListNode? l2)
         {
             int val = 0;
             ListNode prenode = new ListNode(0);
@@ -774,7 +774,7 @@ namespace Yan
         /// <param name="l1"></param>
         /// <param name="l2"></param>
         /// <returns></returns>
-        public ListNode L_21_MergeTwoLists(ListNode l1, ListNode l2)
+        public ListNode? L_21_MergeTwoLists(ListNode? l1, ListNode? l2)
         {
             if (l1 == null)
             {
@@ -810,12 +810,12 @@ namespace Yan
         /// leetcode第23题，合并K个升序链表
         /// 链接：https://leetcode-cn.com/problems/merge-k-sorted-lists/solution/si-wei-jian-dan-shi-jian-ting-kuai-by-17ji-ke-1zho/
         /// </summary>
-        public ListNode L_23_MergeKLists(ListNode[] lists)
+        public ListNode? L_23_MergeKLists(ListNode[] lists)
         {
             List<int> help = new List<int>();
             for (int j = 0; j < lists.Length; j++)
             {
-                ListNode ans = lists[j];
+                ListNode? ans = lists[j];
                 while (ans != null)
                 {
                     help.Add(ans.val);
@@ -838,14 +838,14 @@ namespace Yan
         /// </summary>
         /// <param name="head"></param>
         /// <returns></returns>
-        public ListNode L_24_SwapPairs(ListNode head)
+        public ListNode? L_24_SwapPairs(ListNode head)
         {
             if (head == null) return null;
             ListNode newHead = new ListNode(-100);
             newHead.next = head;
             ListNode first = newHead;
-            ListNode second = head;
-            ListNode third = head.next;
+            ListNode? second = head;
+            ListNode? third = head.next;
             while (third != null && first != null && second != null)
             {
                 ListNode node = second;
@@ -866,16 +866,15 @@ namespace Yan
         /// <param name="head">传入需要操作的数组</param>
         /// <param name="k">需要反转的组长度</param>
         /// <returns></returns>
-        public ListNode L_25_ReverseKGroup(ListNode head, int k)
+        public ListNode? L_25_ReverseKGroup(ListNode? head, int k)
         {
             List<ListNode> list = new List<ListNode>();
-            ListNode p = head;
+            ListNode? p = head;
             for (int i = 0; i < k; i++)
             {
                 if (head == null) { return p; }
                 list.Add(head);
                 head = head.next;
-
             }
             for (int i = 1; i < k; i++)
             {
@@ -1381,7 +1380,7 @@ namespace Yan
         /// 创建ListNode
         /// </summary>
         /// <returns></returns>
-        public ListNode generateList(int[] vals)
+        public ListNode? generateList(int[] vals)
         {
             ListNode? res = null;
             ListNode? last = null;
@@ -1400,7 +1399,7 @@ namespace Yan
             }
             return res;
         }
-        public void printList(ListNode l)
+        public void printList(ListNode? l)
         {
             while (l != null)
             {
