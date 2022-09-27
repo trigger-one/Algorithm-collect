@@ -1,6 +1,9 @@
 using System.Text;
 namespace Yan
 {
+    /// <summary>
+    /// 链表类型，模拟指针
+    /// </summary>
     public class ListNode
     {
         public int val;
@@ -918,8 +921,165 @@ namespace Yan
                     nums[count++] = nums[i];
             return count;
         }
+        /// <summary>
+        /// leetcode第28题，找出字符串中第一个匹配项的下标(此为KMP算法版本)
+        /// https://leetcode.cn/problems/find-the-index-of-the-first-occurrence-in-a-string/solution/c-kmp-xi-wang-wo-jiang-ming-bai-liao-kmpsuan-fa-by/
+        /// </summary>
+        /// <param name="haystack">可能包含needle的字符串</param>
+        /// <param name="needle">需要寻找的目标字符串</param>
+        /// <returns>匹配项下表，若是返回-1则表示没有出现</returns>
+        public int L_28_FindNeedleFromhaystack(string haystack, string needle)
+        {
+            if (string.IsNullOrEmpty(needle))
+            {
+                return 0;
+            }
+            if (needle.Length > haystack.Length || string.IsNullOrEmpty(haystack))
+            {
+                return 1;
+            }
+            return KMP(haystack, needle);
+        }
+        /// <summary>
+        /// leetcode第29题，两数相除
+        /// 
+        /// </summary>
+        /// <param name="dividend"></param>
+        /// <param name="divisor"></param>
+        /// <returns></returns>
+        public int L_29_DivideTwonumbers(int dividend, int divisor)
+        {
+            if (dividend == int.MinValue)
+            {
+                if (divisor == 1)
+                {
+                    return int.MinValue;
+                }
+                if (divisor == -1)
+                {
+                    return int.MaxValue;
+                }
+            }
+            // 考虑除数为最小值的情况
+            if (divisor == int.MinValue)
+            {
+                return dividend == int.MinValue ? 1 : 0;
+            }
+            // 考虑被除数为 0 的情况
+            if (dividend == 0)
+            {
+                return 0;
+            }
 
+            // 一般情况，使用二分查找
+            // 将所有的正数取相反数，这样就只需要考虑一种情况
+            bool rev = false;
+            if (dividend > 0)
+            {
+                dividend = -dividend;
+                rev = !rev;
+            }
+            if (divisor > 0)
+            {
+                divisor = -divisor;
+                rev = !rev;
+            }
 
+            int left = 1, right = int.MaxValue, ans = 0;
+            while (left <= right)
+            {
+                // 注意溢出，并且不能使用除法
+                int mid = left + ((right - left) >> 1);
+                bool check = quickAdd(divisor, mid, dividend);
+                if (check)
+                {
+                    ans = mid;
+                    // 注意溢出
+                    if (mid == int.MaxValue)
+                    {
+                        break;
+                    }
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+            return rev ? -ans : ans;
+        }
+        /// <summary>
+        /// leetcode第30题，串联所有单词的字串
+        /// https://leetcode.cn/problems/substring-with-concatenation-of-all-words/solution/chuan-lian-suo-you-dan-ci-de-zi-chuan-by-244a/
+        /// </summary>
+        /// <returns></returns>
+        public IList<int> L_30_FindSubstring(string s, string[] words)
+        {
+            IList<int> res = new List<int>();
+            int m = words.Length, n = words[0].Length, ls = s.Length;
+            for (int i = 0; i < n; i++)
+            {
+                if (i + m * n > ls)
+                {
+                    break;
+                }
+                Dictionary<string, int> differ = new Dictionary<string, int>();
+                for (int j = 0; j < m; j++)
+                {
+                    string word = s.Substring(i + j * n, n);
+                    if (!differ.ContainsKey(word))
+                    {
+                        differ.Add(word, 0);
+                    }
+                    differ[word]++;
+                }
+                foreach (string word in words)
+                {
+                    if (!differ.ContainsKey(word))
+                    {
+                        differ.Add(word, 0);
+                    }
+                    differ[word]--;
+                    if (differ[word] == 0)
+                    {
+                        differ.Remove(word);
+                    }
+                }
+                for (int start = i; start < ls - m * n + 1; start += n)
+                {
+                    if (start != i)
+                    {
+                        string word = s.Substring(start + (m - 1) * n, n);
+                        if (!differ.ContainsKey(word))
+                        {
+                            differ.Add(word, 0);
+                        }
+                        differ[word]++;
+                        if (differ[word] == 0)
+                        {
+                            differ.Remove(word);
+                        }
+                        word = s.Substring(start - n, n);
+                        if (!differ.ContainsKey(word))
+                        {
+                            differ.Add(word, 0);
+                        }
+                        differ[word]--;
+                        if (differ[word] == 0)
+                        {
+                            differ.Remove(word);
+                        }
+                    }
+                    if (differ.Count == 0)
+                    {
+                        res.Add(start);
+                    }
+                }
+            }
+            return res;
+        }
+        
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -1093,6 +1253,103 @@ namespace Yan
             }
             // Console.WriteLine ("归并排序");
             return result;
+        }
+        /// <summary>
+        /// 于L_28_FindNeedleFromhaystack方法中调用，KMP算法本体
+        /// </summary>
+        private int KMP(string haystack, string needle)
+        {
+            int[] next = GetNext(needle);
+            int i = 0;
+            int j = 0;
+            while (i < haystack.Length)
+            {
+                if (haystack[i] == needle[j])
+                {
+                    j++;
+                    i++;
+                }
+                if (j == needle.Length)
+                {
+                    return i - j;
+                }
+                else if (i < haystack.Length && haystack[i] != needle[j])
+                {
+                    if (j != 0)
+                        j = next[j - 1];
+                    else
+                        i++;
+                }
+
+            }
+            return -1;
+        }
+        /// <summary>
+        /// 于KMP方法中调用，根据传入字符串获取数组下一元素值
+        /// </summary>
+        private int[] GetNext(string str)
+        {
+            int[] next = new int[str.Length];
+            next[0] = 0;
+            int i = 1;
+            int j = 0;
+            while (i < str.Length)
+            {
+                if (str[i] == str[j])
+                {
+                    j++;
+                    next[i] = j;
+                    i++;
+                }
+                else
+                {
+                    if (j == 0)
+                    {
+                        next[i] = 0;
+                        i++;
+                    }
+                    else
+                    {
+                        j = next[j - 1];
+                    }
+                }
+            }
+            return next;
+        }
+        /// <summary>
+        /// 于L_29_DivideTwonumbers方法中调用
+        /// </summary>
+        /// <param name="y">负数</param>
+        /// <param name="z">正数</param>
+        /// <param name="x">负数</param>
+        /// <returns>判断 z * y >= x 是否成立</returns>
+        private bool quickAdd(int y, int z, int x)
+        {
+            int result = 0, add = y;
+            while (z != 0)
+            {
+                if ((z & 1) != 0)
+                {
+                    // 需要保证 result + add >= x
+                    if (result < x - add)
+                    {
+                        return false;
+                    }
+                    result += add;
+                }
+                if (z != 1)
+                {
+                    // 需要保证 add + add >= x
+                    if (add < x - add)
+                    {
+                        return false;
+                    }
+                    add += add;
+                }
+                // 不能使用除法
+                z >>= 1;
+            }
+            return true;
         }
         /// <summary>
         /// 复制一段任意类型的数组值到另一数组
