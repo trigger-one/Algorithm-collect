@@ -26,6 +26,15 @@ namespace Yan
             }
             return retValue;
         }
+        /// <summary>
+        /// 删除字符串中的标点符号
+        /// </summary>
+        /// <param name="str">传入需要删除标点符号的字符串</param>
+        /// <returns>删除完毕后的剩余字符串</returns>
+        public string DeletePunctuation(string str){
+            str = Regex.Replace(str,"[ \\[ \\] \\^ \\-_*×――(^)（^）$%~!@#$…&%￥—+=<>【】《》!！??？:：•`·、。，；,.;\"‘’“”-]", "");
+            return str;
+        }
 
         //TODO 待添加方法处
     }

@@ -1078,7 +1078,113 @@ namespace Yan
             }
             return res;
         }
-
+        /// <summary>
+        /// leetcode第31题，下一个排列
+        /// https://leetcode.cn/problems/next-permutation/solution/shuang-zhi-zhen-by-qiu-xing-chen-gpzp/
+        /// </summary>
+        public void L_31_NextPermutation(int[] nums)
+        {
+            int n = nums.Length;
+            //排除特殊情况
+            if (n <= 1) return;
+            //双指针
+            int left = n - 2;
+            int right = n - 1;
+            //翻转最小字串
+            while (right - left < n)
+            {
+                for (int i = right; i > left; i--)
+                {
+                    //查询字符串是否可以翻转
+                    if (nums[i] > nums[left])
+                    {
+                        //翻转left,i指针
+                        Swap(ref nums[i], ref nums[left]);
+                        //翻转left指针后所有项
+                        for (int j = left + 1; j <= left + (right - left + 1) / 2; j++)
+                        {
+                            Swap(ref nums[j], ref nums[right - j + left + 1]);
+                        }
+                        return;
+                    }
+                }
+                left--;
+            }
+            //数组顺序翻转数组
+            for (int i = 0; i < n / 2; i++)
+            {
+                Swap(ref nums[i], ref nums[n - 1 - i]);
+            }
+            return;
+        }
+        /// <summary>
+        /// leetcode第32题，最长有效括号
+        /// https://leetcode.cn/problems/longest-valid-parentheses/solution/zhan-shuang-duan-dui-lie-linkedlist-by-h-1aj7/
+        /// </summary>
+        /// <param name="s"></param>
+        public int L_32_LongestValidParentheses(string s)
+        {
+            int ans = 0;
+            var stack = new Stack<int>();
+            stack.Push(-1);
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == '(') stack.Push(i);
+                else
+                {
+                    stack.Pop();
+                    if (stack.Count == 0) stack.Push(i);
+                    else ans = Math.Max(ans, i - stack.Peek());
+                }
+            }
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第33题，搜索旋转排序数组
+        /// https://leetcode.cn/problems/search-in-rotated-sorted-array/solution/er-fen-cha-zhao-shuang-bai-by-qiu-xing-c-yx6e/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public int L_33_SearchRotatesortarray(int[] nums, int target)
+        {
+            int ans;
+            int n = nums.Length;
+            //排除特殊情况
+            if (n == 0) return -1;
+            if (n == 1 && nums[0] == target) return 0;
+            else if (n == 1 && nums[0] != target) return -1;
+            //左右指针寻找连接点
+            int mid = 0;
+            while (mid < n - 1)
+            {
+                if (nums[mid] < nums[mid + 1]) mid++; else break;
+            }
+            ans = target > nums[0] ? Binarysearch(nums, target, 0, mid) : ans = Binarysearch(nums, target, mid + 1, n - 1);
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第34题，在排序数组中查找元素的第一个和最后一个位置
+        /// https://leetcode.cn/problems/find-first-and-last-position-of-element-in-sorted-array/solution/34-zai-pai-xu-shu-zu-zhong-cha-zhao-yuan-ldva/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="target"></param>
+        /// <returns>如果数组中不存在目标值 target，返回 [-1, -1]</returns>
+        public int[] L_34_SearchRange(int[] nums, int target)
+        {
+            int[] re = { -1, -1 };
+            int i = 0;
+            int le = nums.Length;
+            for (; i < le; i++)
+            {
+                if (nums[i] == target)
+                {
+                    re[1] = i;
+                    if (re[0] == -1) re[0] = i;
+                }
+            }
+            return re;
+        }
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -1131,6 +1237,50 @@ namespace Yan
         {
             double sqrt = Math.Sqrt(5);
             return (1 / sqrt * (Math.Pow((1 + sqrt) / 2, n) - Math.Pow((1 - sqrt) / 2, n)));
+        }
+        /// <summary>
+        /// 二分查找
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="target"></param>
+        /// <returns>如果目标值存在返回下标，否则返回 -1</returns>
+        public int Binarysearch(int[] nums, int target)
+        {
+            int left = 0, right = nums.Length - 1;
+            while (left <= right)
+            {
+                int mid = (right - left) / 2 + left;
+                int num = nums[mid];
+                if (num == target)
+                {
+                    return mid;
+                }
+                else if (num > target)
+                {
+                    right = mid - 1;
+                }
+                else
+                {
+                    left = mid + 1;
+                }
+            }
+            return -1;
+        }
+        /// <summary>
+        /// 重载二分查找，于L_33_SearchRotatesortarray中调用
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="target"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        private int Binarysearch(int[] nums, int target, int start, int end)
+        {
+            if (start > end) return -1;
+            int mid = (start + end) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[mid] > target) end = mid - 1; else start = mid + 1;
+            return Binarysearch(nums, target, start, end);
         }
         /// <summary>
         /// 于F3方法内部调用
