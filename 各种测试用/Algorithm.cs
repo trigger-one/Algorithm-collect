@@ -67,7 +67,7 @@ namespace Yan
         /// <summary>
         /// 冒泡 平均时间复杂度：O(n²) 空间复杂度：O(1) 不占用额外内存 稳定
         /// </summary>
-        public int[] bubbleSort(int[] a)
+        public int[] BubbleSort(int[] a)
         {
             if (a.Length == 0) return a;
             for (int i = 0; i < a.Length; i++)
@@ -86,7 +86,7 @@ namespace Yan
         /// <summary>
         /// 选择排序 平均时间复杂度：O(n²) 空间复杂度：O(1) 不占用额外内存 不稳定
         /// </summary>
-        public int[] selectionSort(int[] a)
+        public int[] SelectionSort(int[] a)
         {
             if (a.Length == 0) return a;
             for (int i = 0; i < a.Length; i++)
@@ -107,7 +107,7 @@ namespace Yan
         /// <summary>
         /// 插入排序 平均时间复杂度：O(n²) 空间复杂度：O(1) 不占用额外内存 稳定
         /// </summary>
-        public int[] insertionSort(int[] a)
+        public int[] InsertionSort(int[] a)
         {
             if (a.Length == 0) return a;
             int current;
@@ -128,7 +128,7 @@ namespace Yan
         /// <summary>
         /// 希尔排序 平均时间复杂度：O(n log n) 空间复杂度：O(1) 不占用额外内存 不稳定
         /// </summary>
-        public int[] lengthShellSort(int[] a)
+        public int[] LengthShellSort(int[] a)
         {
             int len = a.Length;
             int temp, gap = len / 2;
@@ -153,7 +153,7 @@ namespace Yan
         /// <summary>
         /// 归并排序 平均时间复杂度：O(n log n) 空间复杂度：O(n) 占用额外内存 稳定
         /// </summary>
-        public int[] mergeSort(int[] a)
+        public int[] MergeSort(int[] a)
         {
             if (a.Length < 2) return a;
             int mid = a.Length / 2;
@@ -161,7 +161,7 @@ namespace Yan
             int[] right = new int[a.Length - mid];
             left = Copy(a, 0, mid);
             right = Copy(a, mid, a.Length);
-            return Merge(mergeSort(left), mergeSort(right));
+            return Merge(MergeSort(left), MergeSort(right));
         }
         /// <summary>
         /// 快速排序 平均时间复杂度：O(n log n) 空间复杂度：O(log n) 不占用额外内存 不稳定
@@ -169,17 +169,17 @@ namespace Yan
         /// <param name="start">开始</param>
         /// <param name="end">结束(长度-1)</param>
         /// <returns></returns>
-        public int[]? quickSort(int[] a, int start, int end)
+        public int[]? QuickSort(int[] a, int start, int end)
         {
             if (a.Length < 1 || start < 0 || end >= a.Length || start > end) return null;
             int smallIndex = partition(a, start, end);
             if (smallIndex > start)
             {
-                quickSort(a, start, smallIndex - 1);
+                QuickSort(a, start, smallIndex - 1);
             }
             if (smallIndex < end)
             {
-                quickSort(a, smallIndex + 1, end);
+                QuickSort(a, smallIndex + 1, end);
             }
             Console.WriteLine("快速排序");
             return a;
@@ -187,7 +187,7 @@ namespace Yan
         /// <summary>
         /// 堆排序 平均时间复杂度：O(n log n) 空间复杂度：O(1) 不占用额外内存 不稳定
         /// </summary>
-        public int[] heapSort(int[] a)
+        public int[] HeapSort(int[] a)
         {
             len = a.Length - 1;
             for (int i = len; i >= 0; i--)
@@ -205,7 +205,7 @@ namespace Yan
         1计数排序是一种非常快捷的 稳定性强 的排序方法，时间复杂度O(n+k),其中n为要排序的数的个数，k为要排序的数的最大值。
         2计数排序对一定量的整数排序时候的速度非常快，一般快于其他排序算法，只限于整数进行排序。
         3计数排序是消耗空间复杂度来获取快捷的排序方法，其空间复杂度为O(K) 同理K为要排序的最大值。 */
-        public int[] countingSort(int[] a)
+        public int[]CcountingSort(int[] a)
         {
             //1.得到数列的最大值
             int Max = a[0];
@@ -239,7 +239,7 @@ namespace Yan
         /// 基数排序 平均时间复杂度：O(n * k) 空间复杂度：O(n + k) 占用额外内存 稳定
         /// </summary>
         /// <param name="digit">基数大小，为方便保险一般设为10</param>
-        public int[] radixSort(int[] ArrayToSort, int digit)
+        public int[] RadixSort(int[] ArrayToSort, int digit)
         {
             for (int k = 1; k <= digit; k++)
             {
@@ -272,7 +272,7 @@ namespace Yan
         /// 桶排序 平均时间复杂度：O(n + k) 空间复杂度：O(n + k) 占用额外内存 稳定
         /// </summary>
         /// <param name="bucketSize">桶（可理解为一个范围区间）的大小,数值越大可储存的范围越大，数字也会越多</param>
-        public int[] bucketSort(int[] array, int bucketSize)
+        public int[] BucketSort(int[] array, int bucketSize)
         {
             /* 创建bucket时，在二维中增加一组标识位，其中bucket[x, 0]表示这一维所包含的数字的个数
             通过这样的技巧可以少写很多代码 */
@@ -292,7 +292,7 @@ namespace Yan
                     insertion[k] = bucket[j, k + 1];
                 }
                 //插入排序
-                insertionSort(insertion);
+                InsertionSort(insertion);
                 //把排好序的结果回写到桶里
                 for (int k = 0; k < insertion.Length; k++)
                 {
