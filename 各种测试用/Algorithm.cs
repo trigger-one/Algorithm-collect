@@ -640,7 +640,7 @@ namespace Yan
         /// 链接：https://leetcode-cn.com/problems/palindrome-number/solution/hui-wen-shu-by-leetcode-solution/
         /// </summary>
         /// <param name="x">需要判断的数字</param>
-        public bool L_9_isPalindrome(int x)
+        public bool L_9_IsPalindrome(int x)
         {
             /* 特殊情况：
             如上所述，当 x < 0 时，x 不是回文数。
@@ -713,7 +713,7 @@ namespace Yan
         /// leetcode第14题，最长公共前缀
         /// </summary>
         /// <param name="strs">字符串数组</param>
-        public String L_14_longestCommonPrefix(String[] strs)
+        public String L_14_LongestCommonPrefix(String[] strs)
         {
             if (strs == null || strs.Length == 0)
             {
