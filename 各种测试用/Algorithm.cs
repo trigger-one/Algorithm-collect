@@ -20,6 +20,23 @@ namespace Yan
         //NOTE 关键字文本：TODO HACK NOTE INFO TAG XXX BUG FIXME
         private int len; //全局变量
         /// <summary>
+        /// 于L_37_SolveSudoku中调用
+        /// </summary>
+        List<Dictionary<int, bool>> liCol = new List<Dictionary<int, bool>>();
+        /// <summary>
+        /// 于L_37_SolveSudoku中调用
+        /// </summary>
+        List<Dictionary<int, bool>> liRow = new List<Dictionary<int, bool>>();
+        /// <summary>
+        /// 于L_37_SolveSudoku中调用
+        /// </summary>
+        List<Dictionary<int, bool>> liBox = new List<Dictionary<int, bool>>();
+        /// <summary>
+        /// 于L_37_SolveSudoku中调用
+        /// </summary>
+        char[][] boardAllres = null;
+
+        /// <summary>
         ///  1+2+3+....+n的递归算法
         /// </summary>
         public int process1(int i)
@@ -205,7 +222,7 @@ namespace Yan
         1计数排序是一种非常快捷的 稳定性强 的排序方法，时间复杂度O(n+k),其中n为要排序的数的个数，k为要排序的数的最大值。
         2计数排序对一定量的整数排序时候的速度非常快，一般快于其他排序算法，只限于整数进行排序。
         3计数排序是消耗空间复杂度来获取快捷的排序方法，其空间复杂度为O(K) 同理K为要排序的最大值。 */
-        public int[]CcountingSort(int[] a)
+        public int[] CcountingSort(int[] a)
         {
             //1.得到数列的最大值
             int Max = a[0];
@@ -1185,6 +1202,208 @@ namespace Yan
             }
             return re;
         }
+        /// <summary>
+        /// leetcode第35题，搜索插入位置
+        /// https://leetcode.cn/problems/search-insert-position/solution/35sou-suo-cha-ru-wei-zhi-xiao-bai-yi-don-tnsm/
+        /// </summary>
+        /// <returns>插入位置下标</returns>
+        public int L_35_SearchInsert(int[] nums, int target)
+        {
+            //设最左边下标为0，最右边下标为数组长度-1
+            int low = 0, high = nums.Length - 1;
+            //声明一个存储中间值的变量
+            int mid = 0;
+            //如果左小于等于右，持续循环
+            while (low <= high)
+            {
+                //求low到high的中间值；
+                mid = (high - low) / 2 + low;
+                //判断是否与target相等;
+                if (nums[mid] == target)
+                {
+                    //找到则返回数组下标
+                    return mid;
+                }
+                //如果判断中间值比target要小，那就证明target在中间值的右边
+                else if (nums[mid] < target)
+                {
+                    //把high移动到中间值后一位，然后继续循环查找
+                    low = mid + 1;
+                }
+                //如果判断中间值比target要大，那就证明target在中间值的左边
+                else
+                {
+                    //把high移动到中间值前一位，然后继续循环查找
+                    high = mid - 1;
+                }
+            }
+            //上面循环没有找到target，但中间值是最靠近target的数的。
+            //判断相近数的大小，然后返回插入的下标
+            if (target > nums[mid])
+            {
+                return mid + 1;
+            }
+            else
+            {
+                return mid;
+            }
+        }
+        /// <summary>
+        /// leetcode第36题，有效的数独
+        /// https://leetcode.cn/problems/valid-sudoku/solution/can-kao-guan-fang-da-an-jin-xing-liao-yi-ge-you-hu/
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
+        public bool L_36_IsValidSudoku(char[][] board)
+        {
+            Dictionary<int, int>[] X = new Dictionary<int, int>[9];
+            //X轴上每一行的dictionary必须全部用上。
+            for (int i = 0; i < 9; i++)
+            {
+                X[i] = new Dictionary<int, int>();
+                //实例化每一行的dictionary
+            }
+            for (int i = 0; i < 3; i++)
+            //因为一“宫”占三行，而九行就有三“宫”，所以需要用一个变量来控制重新实例化Dictionary
+            {
+                Dictionary<int, int>[] B = new Dictionary<int, int>[3];
+                //B代表每一个“宫”，而遍历的每一行只经过三个“宫”
+                for (int j = 0; j < 3; j++)
+                {
+                    B[j] = new Dictionary<int, int>();
+                    //遍历实例化
+                }
+                for (int i1 = 0; i1 < 3; i1++)//
+                {
+                    int i_k = i * 3 + i1;//i_k控制遍历的行
+
+                    Dictionary<int, int> Y = new Dictionary<int, int>();
+                    //遍历的Y轴只需要一个Dictionary
+                    for (int i2 = 0; i2 < 9; i2++)//i2控制遍历的列
+                    {
+                        if (board[i_k][i2] != '.')
+                        {
+                            if (Y.ContainsKey(board[i_k][i2]) ||
+                                X[i2].ContainsKey(board[i_k][i2]) ||
+                                B[i2 / 3].ContainsKey(board[i_k][i2]))
+                                return false;
+                            //如果在dictionary当中找到相同的数字，return false
+
+                            Y.Add(board[i_k][i2], 0);//X Dic 添加
+                            X[i2].Add(board[i_k][i2], 0);//Y Dic 添加
+                            B[i2 / 3].Add(board[i_k][i2], 0);//B Dic 添加
+                            //反之添加进来
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        /// <summary>
+        /// leetcode第37题，解数独
+        /// https://leetcode.cn/problems/sudoku-solver/solution/jie-shu-du-by-inhero/
+        /// </summary>
+        /// <param name="board"></param>
+        public void L_37_SolveSudoku(char[][] board)
+        {
+            //判断一共有多少个数字
+            int hasNumCount = 0;
+            Dictionary<int, bool> dicAllTemp = new Dictionary<int, bool>();
+            //创建一个键值对集合存储数字是否出现过 
+            for (int i = 1; i <= 9; i++)
+            {
+                dicAllTemp.Add(i, false);
+            }
+            for (int i = 0; i < 9; i++)
+            {
+                //存储对应的九列
+                liCol.Add(new Dictionary<int, bool>(dicAllTemp));
+                //存储对应的九行
+                liRow.Add(new Dictionary<int, bool>(dicAllTemp));
+                //存储对应的九个3*3格子
+                liBox.Add(new Dictionary<int, bool>(dicAllTemp));
+            }
+            //遍历整个集合 将已出现的数字赋值为true 
+            for (int i = 0; i < board.Length; i++)
+            {
+                for (int j = 0; j < board[0].Length; j++)
+                {
+                    if (board[i][j] != '.')
+                    {
+                        int temp = board[i][j] - 48;
+                        liRow[i][temp] = true;
+                        liCol[j][temp] = true;
+                        int count = (i / 3) * 3 + j / 3;
+                        liBox[count][temp] = true;
+                        hasNumCount++;
+                    }
+                }
+            }
+            Recursive(board, hasNumCount, 0, 0);
+            board = boardAllres;
+        }
+        /// <summary>
+        /// leetcode第38题，外观数列
+        /// https://leetcode.cn/problems/count-and-say/solution/wai-guan-shu-lie-by-leetcode-solution-9rt8/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public string L_38_CountAndSay(int n)
+        {
+            string str = "1";
+            for (int i = 2; i <= n; ++i)
+            {
+                StringBuilder sb = new StringBuilder();
+                int start = 0;
+                int pos = 0;
+
+                while (pos < str.Length)
+                {
+                    while (pos < str.Length && str[pos] == str[start])
+                    {
+                        pos++;
+                    }
+                    sb.Append(pos - start).Append(str[start]);
+                    start = pos;
+                }
+                str = sb.ToString();
+            }
+
+            return str;
+        }
+        /// <summary>
+        /// leetcode第39题，组合总和
+        /// https://leetcode.cn/problems/combination-sum/solution/39-zu-he-zong-he-c-hui-su-by-kas233-jqy5/
+        /// </summary>
+        /// <param name="candidates"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_39_CombinationSum(int[] candidates, int target)
+        {
+            var res = new List<IList<int>>();
+            // 排序
+            var candidateList = candidates.ToList();
+            candidateList.Sort();
+            Backtrack(candidateList.ToArray(), target, new List<int>(), 0, 0, res);
+            return res;
+        }
+        /// <summary>
+        /// leetcode第40题，组合总和2
+        /// https://leetcode.cn/problems/combination-sum-ii/solution/40-zu-he-zong-he-ii-c-hui-su-jian-zhi-by-dlht/
+        /// </summary>
+        /// <param name="candidates"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_40_CombinationSum2(int[] candidates, int target)
+        {
+            var res = new List<IList<int>>();
+            // 排序，为剪枝做准备
+            var candidateList = candidates.ToList();
+            candidateList.Sort();
+            Backtrack(candidateList.ToArray(), target, new List<int>(), 0, res);
+            return res;
+        }
+        
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -1265,6 +1484,179 @@ namespace Yan
                 }
             }
             return -1;
+        }
+        /// <summary>
+        /// 复制一段任意类型的数组值到另一数组
+        /// </summary>
+        /// <param name="orign">数据来源</param>
+        /// <param name="from">复制参数的初始下标</param>
+        /// <param name="to">复制参数的终点下标(不包括该下标的值)</param>
+        public T[] Copy<T>(T[] orign, int from, int to)
+        {
+            if (from >= to || to > orign.Length) throw new Exception("超出索引");
+            T[] targeta = new T[to - from];
+            int index = 0;
+            for (int i = from; i < to; i++)
+            {
+                targeta[index++] = orign[i];
+            }
+            return targeta;
+        }
+        /// <summary>
+        /// 同类型参数交换
+        /// </summary>
+        public void Swap<T>(ref T a, ref T b)
+        {
+            T temp = a;
+            a = b;
+            b = temp;
+        }
+        /// <summary>
+        /// 创建ListNode
+        /// </summary>
+        /// <returns></returns>
+        public ListNode? generateList(int[] vals)
+        {
+            ListNode? res = null;
+            ListNode? last = null;
+            foreach (var val in vals)
+            {
+                if (res is null)
+                {
+                    res = new ListNode(val);
+                    last = res;
+                }
+                else
+                {
+                    last.next = new ListNode(val);
+                    last = last.next;
+                }
+            }
+            return res;
+        }
+        public void printList(ListNode? l)
+        {
+            while (l != null)
+            {
+                Console.Write($"{l.val}, ");
+                l = l.next;
+            }
+            Console.WriteLine("");
+        }
+        /// <summary>
+        /// 于L_39_CombinationSum中调用
+        /// </summary>
+        /// <param name="candidates">整数数组</param>
+        /// <param name="target">目标整数</param>
+        /// <param name="temp">临时列表</param>
+        /// <param name="sum">列表中的整数和</param>
+        /// <param name="i">索引</param>
+        /// <param name="res">结果集</param>
+        private void Backtrack(int[] candidates, int target, List<int> temp, int sum, int i, IList<IList<int>> res)
+        {
+            // 当前值可以重复被选取，从索引i开始遍历
+            for (int j = i; j < candidates.Length; j++)
+            {
+                // 临时列表中加入对应索引j的值
+                temp.Add(candidates[j]);
+                // 累计和
+                sum += candidates[j];
+                // 大于等于目标值时，后续循环只会使和更大，处理后可以直接结束循环
+                if (sum >= target)
+                {
+                    // 满足和等于目标值加入结果集
+                    if (sum == target)
+                        res.Add(temp.ToArray());
+                    // 临时列表回溯，并跳出循环
+                    temp.RemoveAt(temp.Count - 1);
+                    break;
+                }
+                else
+                {
+                    // 当和小于目标值时，继续递归进行累计，注意因为同一数字可重复使用所以索引传入j
+                    Backtrack(candidates, target, temp, sum, j, res);
+                    // 临时列表回溯
+                    temp.RemoveAt(temp.Count - 1);
+                    // 减去对应值
+                    sum -= candidates[j];
+                }
+            }
+        }
+        /// <summary>
+        /// 于L_40_CombinationSum2调用
+        /// </summary>
+        /// <param name="candidates">整数数组</param>
+        /// <param name="target">目标整数</param>
+        /// <param name="temp">临时列表</param>
+        /// <param name="i">索引</param>
+        /// <param name="res">结果集</param>
+        private void Backtrack(int[] candidates, int target, List<int> temp, int i, IList<IList<int>> res)
+    {
+        if (target == 0)
+            res.Add(temp.ToArray());
+        else if (target > 0)
+            for (int j = i; j < candidates.Length; j++)
+            {
+                // 剪枝，当j不是循环中第一个值，且当前值等于前一个值时，重复，去除
+                if (j > i && candidates[j] == candidates[j - 1])
+                    continue;
+                temp.Add(candidates[j]);
+                target -= candidates[j];
+                Backtrack(candidates, target, temp, j + 1, res);
+                temp.RemoveAt(temp.Count - 1);
+                target += candidates[j];
+            }
+    }
+        /// <summary>
+        /// 于L_37_SolveSudoku中调用
+        /// </summary>
+        private bool Recursive(char[][] board, int hasNumCount, int i, int j)
+        {
+            //81个数字代表已经填满了 直接返回结果
+            if (hasNumCount == 81)
+            {
+                boardAllres = board;
+                return true;
+            }
+            for (; i < board.Length; i++)
+            {
+                for (j = 0; j < board[0].Length; j++)
+                {
+                    if (board[i][j] == '.')
+                    {
+                        //查出该行对应的所有未使用的数字 一次遍历填入
+                        List<int> liRes = liRow[i].Where(e => e.Value == false).Select(e => e.Key).ToList();
+                        foreach (var item in liRes)
+                        {
+                            //判读位于那个格子 
+                            int count = (i / 3) * 3 + j / 3;
+                            if (liCol[j][item] == false && liBox[count][item] == false && liRow[i][item] == false)
+                            {
+                                //总数+1 对应的位置赋值为true
+                                hasNumCount++;
+                                liRow[i][item] = true;
+                                liCol[j][item] = true;
+                                liBox[count][item] = true;
+                                //之所以加48为了将数字转为char类型存进去
+                                board[i][j] = (char)(item + 48);
+                                //递归 存在不符合就返回 结果为true只有一种情况 那就是已经完成了
+                                if (Recursive(board, hasNumCount, i, 0))
+                                {
+                                    return true;
+                                }
+                                //不符合 将操作撤回到之前 
+                                hasNumCount--;
+                                board[i][j] = '.';
+                                liRow[i][item] = false;
+                                liCol[j][item] = false;
+                                liBox[count][item] = false;
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+            return false;
         }
         /// <summary>
         /// 重载二分查找，于L_33_SearchRotatesortarray中调用
@@ -1500,63 +1892,6 @@ namespace Yan
             }
             return true;
         }
-        /// <summary>
-        /// 复制一段任意类型的数组值到另一数组
-        /// </summary>
-        /// <param name="orign">数据来源</param>
-        /// <param name="from">复制参数的初始下标</param>
-        /// <param name="to">复制参数的终点下标(不包括该下标的值)</param>
-        public T[] Copy<T>(T[] orign, int from, int to)
-        {
-            if (from >= to || to > orign.Length) throw new Exception("超出索引");
-            T[] targeta = new T[to - from];
-            int index = 0;
-            for (int i = from; i < to; i++)
-            {
-                targeta[index++] = orign[i];
-            }
-            return targeta;
-        }
-        /// <summary>
-        /// 同类型参数交换
-        /// </summary>
-        public void Swap<T>(ref T a, ref T b)
-        {
-            T temp = a;
-            a = b;
-            b = temp;
-        }
-        /// <summary>
-        /// 创建ListNode
-        /// </summary>
-        /// <returns></returns>
-        public ListNode? generateList(int[] vals)
-        {
-            ListNode? res = null;
-            ListNode? last = null;
-            foreach (var val in vals)
-            {
-                if (res is null)
-                {
-                    res = new ListNode(val);
-                    last = res;
-                }
-                else
-                {
-                    last.next = new ListNode(val);
-                    last = last.next;
-                }
-            }
-            return res;
-        }
-        public void printList(ListNode? l)
-        {
-            while (l != null)
-            {
-                Console.Write($"{l.val}, ");
-                l = l.next;
-            }
-            Console.WriteLine("");
-        }
+
     }
 }
