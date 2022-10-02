@@ -1403,6 +1403,166 @@ namespace Yan
             Backtrack(candidateList.ToArray(), target, new List<int>(), 0, res);
             return res;
         }
+        /// <summary>
+        /// leetcode第41题，缺失的第一个正数
+        /// https://leetcode.cn/problems/first-missing-positive/solution/by-nostalgic-davinciuey-3b4m/
+        /// </summary>
+        /// <param name="nums">未排序的整数数组</param>
+        /// <returns></returns>
+        public int L_41_FirstMissingPositive(int[] nums)
+        {
+            var li = new List<int>(nums).Where(c => c > 0).ToList();
+            if (li.Count < 1) { return 1; }
+            li.Sort();
+            if (li.First() > 1)
+            {
+                return 1;
+            }
+            for (int i = 0; i < li.Count - 1; i++)
+            {
+                var c = li[i + 1] - li[i];
+                if (c > 1)
+                {
+                    return li[i] + 1;
+                }
+            }
+            return li[li.Count - 1] + 1;
+        }
+        /// <summary>
+        /// leetcode第42题，接雨水
+        /// https://leetcode.cn/problems/trapping-rain-water/solution/fang-zhan-de-ao-xing-shui-chi-ji-suan-by-nsmild/
+        /// </summary>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public int L_42_Trap(int[] height)
+        {
+            if (null == height || height.Length == 0) return 0;
+            int totals = 0;
+
+            // 单调栈就是比普通的栈多一个性质，即维护一个栈内元素单调
+            // 使用栈来存储每个可能接到雨水的格子的索引值！！！
+            Stack<int> stacks = new Stack<int>();
+
+            for (int i = 0; i < height.Length; i++)
+            {
+                while (stacks.Count > 0 && height[i] > height[stacks.Peek()])
+                {
+                    // 弹出当前比height[i]小的栈顶
+                    int top = stacks.Pop();
+
+                    // 如果栈顶元素一直相等，那么全都pop出去，只留第一个，这个思路相对来说简单好理解一点，类似一直就计算凹槽里的水
+                    while (stacks.Count > 0 && height[stacks.Peek()] == height[top])
+                    {
+                        stacks.Pop();
+                    }
+
+                    // 如果为空的话，说明左边留不住水，没有形成凹型
+                    if (stacks.Count > 0)
+                    {
+                        int stackTop = stacks.Peek();
+                        // stackTop此时指向的是此次接住的雨水的左边界的位置。右边界是当前的柱体，即i
+                        // Math.min(height[stackTop], height[i]) 是左右柱子高度的min，减去height[curIdx]就是雨水的高度
+
+                        // i - stackTop - 1 是雨水的宽度
+
+                        // 计算雨水
+                        // 接住雨水的量的高度是栈顶元素和左右两边形成的高度差的min。宽度是1
+                        int distance = i - stackTop - 1;
+                        totals += distance * (Math.Min(height[stackTop], height[i]) - height[top]);
+                    }
+                }
+
+                stacks.Push(i);
+            }
+            return totals;
+        }
+        /// <summary>
+        /// leetcode第43题，字符串相乘
+        /// https://leetcode.cn/problems/multiply-strings/solution/cban-ben-shu-shi-cheng-fa-by-wq9b5mehup/
+        /// </summary>
+        /// <param name="num1"></param>
+        /// <param name="num2"></param>
+        /// <returns></returns>
+        public string L_43_Multiply(string num1, string num2)
+        {
+            StringBuilder sum = new StringBuilder(new string('0', num1.Length + num2.Length));
+            for (int i = num1.Length - 1; i >= 0; i--)
+            {
+                for (int j = num2.Length - 1; j >= 0; j--)
+                {
+                    int next = sum[i + j + 1] - '0' + (num1[i] - '0') * (num2[j] - '0');
+                    sum[i + j + 1] = (char)(next % 10 + '0');
+                    sum[i + j] += (char)(next / 10);
+                }
+            }
+            string res = sum.ToString().TrimStart('0');
+            return res.Length == 0 ? "0" : res;
+        }
+        /// <summary>
+        /// leetcode第44题，通配符匹配
+        /// https://leetcode.cn/problems/wildcard-matching/solution/shuang-zhi-zhen-jie-fa-qing-xi-yi-dong-by-xiao-yao/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        public bool L_44_IsMatch(string s, string p)
+        {
+            int i = 0;//指向字符串s
+            int j = 0;//指向字符串p
+            int startPos = -1;//记录星号的位置
+            int match = -1;//用于匹配星号
+            while (i < s.Length)
+            {
+                //表示相同或者p中为?
+                if (j < p.Length && (s[i] == p[j] || p[j] == '?'))
+                {
+                    i++;
+                    j++;
+                }
+                //匹配到了星号，记录下的位置
+                else if (j < p.Length && p[j] == '*')
+                {
+                    startPos = j;
+                    match = i;
+                    j = startPos + 1;
+                }
+                //以上都没有匹配到，回到星号所在的位置，往后再次匹配
+                else if (startPos != -1)
+                {
+                    match++;
+                    i = match;
+                    j = startPos + 1;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            //去除多余的星号
+            while (j < p.Length && p[j] == '*') j++;
+            return j == p.Length;
+        }
+        /// <summary>
+        /// leetcode第45题，跳跃游戏Ⅱ
+        /// https://leetcode.cn/problems/jump-game-ii/solution/-tiao-yue-you-xi-ii-by-hareyukai/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public int L_45_Jump(int[] nums)
+        {
+            int steps = 0, end = 0, maxPos = 0;
+            for (int i = 0; i < nums.Length - 1; i++)
+            {
+                maxPos = Math.Max(maxPos, nums[i] + i);
+                if (i == end)
+                {
+                    end = maxPos;
+                    ++steps;
+                }
+            }
+            return steps;
+        }
+        
         
         //TODO待添加算法处
         /// <summary>
@@ -1591,22 +1751,22 @@ namespace Yan
         /// <param name="i">索引</param>
         /// <param name="res">结果集</param>
         private void Backtrack(int[] candidates, int target, List<int> temp, int i, IList<IList<int>> res)
-    {
-        if (target == 0)
-            res.Add(temp.ToArray());
-        else if (target > 0)
-            for (int j = i; j < candidates.Length; j++)
-            {
-                // 剪枝，当j不是循环中第一个值，且当前值等于前一个值时，重复，去除
-                if (j > i && candidates[j] == candidates[j - 1])
-                    continue;
-                temp.Add(candidates[j]);
-                target -= candidates[j];
-                Backtrack(candidates, target, temp, j + 1, res);
-                temp.RemoveAt(temp.Count - 1);
-                target += candidates[j];
-            }
-    }
+        {
+            if (target == 0)
+                res.Add(temp.ToArray());
+            else if (target > 0)
+                for (int j = i; j < candidates.Length; j++)
+                {
+                    // 剪枝，当j不是循环中第一个值，且当前值等于前一个值时，重复，去除
+                    if (j > i && candidates[j] == candidates[j - 1])
+                        continue;
+                    temp.Add(candidates[j]);
+                    target -= candidates[j];
+                    Backtrack(candidates, target, temp, j + 1, res);
+                    temp.RemoveAt(temp.Count - 1);
+                    target += candidates[j];
+                }
+        }
         /// <summary>
         /// 于L_37_SolveSudoku中调用
         /// </summary>
