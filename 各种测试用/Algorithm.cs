@@ -1562,6 +1562,210 @@ namespace Yan
             }
             return steps;
         }
+        /// <summary>
+        /// leetcode第46题，全排序
+        /// https://leetcode.cn/problems/permutations/solution/by-adoring-nightingaledgj-ynhr/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_46_Permute(int[] nums)
+        {
+            List<List<int>> GetAnswer(int dimension)
+            {
+                List<List<int>> answer = new();
+                if (dimension == 1)
+                {
+                    answer.Add(new List<int> { nums[0] });
+                    return answer;
+                }
+                if (dimension == 2)
+                {
+                    answer.Add(new List<int> { nums[0], nums[1] });
+                    answer.Add(new List<int> { nums[1], nums[0] });
+                    return answer;
+                }
+                answer = GetAnswer(dimension - 1);
+                answer.ForEach(i => i.Add(nums[dimension - 1]));//每个后面新增元素
+                                                                //深拷贝
+                List<List<int>> ansi = answer.Select(i => i.ToArray().ToList()).ToList();
+                for (int j = 0; j < dimension - 1; j++)
+                {
+                    //深拷贝
+                    List<List<int>> ansj = ansi.Select(i => i.ToArray().ToList()).ToList();
+                    ansj.ForEach(i =>
+                    {
+                        i[i.IndexOf(nums[j])] = nums[dimension - 1];
+                        i[^1] = nums[j];//等效于i[i.Length-1] = nums[j]
+                    });
+                    answer.AddRange(ansj);
+                }
+                return answer;
+            }
+            List<IList<int>> ans = new();
+            GetAnswer(nums.Length).ForEach(i => ans.Add(i));
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第47题，全排列Ⅱ
+        /// https://leetcode.cn/problems/permutations-ii/solution/yan-du-you-xian-bian-li-by-jian-chi-3/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_47_PermuteUnique(int[] nums)
+        {
+            //DFS
+            Queue<List<int>> container = new Queue<List<int>>();
+            Queue<List<int>> usedIndex = new Queue<List<int>>();
+
+            container.Enqueue(new List<int>());
+            usedIndex.Enqueue(new List<int>());
+            Array.Sort(nums);
+
+            //一共需要执行的层数
+            for (int layer = 0; layer < nums.Length; layer++)
+            {
+                //记录容器当前层的数据个数
+                int cnt = container.Count;
+                for (int i = 0; i < cnt; i++)
+                {
+                    var data = container.Dequeue();
+                    var used = usedIndex.Dequeue();
+                    int lastUse = -11;
+                    for (int j = 0; j < nums.Length; j++)
+                    {
+                        //查找当前数字是否使用过
+                        if (!used.Contains(j) && lastUse != nums[j])
+                        {
+                            //如果没有就复制前面层的所有数字并加入这个特殊数字
+                            var temp = new List<int>(data);
+                            var tempIndex = new List<int>(used);
+                            temp.Add(nums[j]);
+                            tempIndex.Add(j);
+                            lastUse = nums[j];
+                            container.Enqueue(temp);
+                            usedIndex.Enqueue(tempIndex);
+                        }
+                    }
+                }
+            }
+            List<IList<int>> res = new List<IList<int>>(container);
+            return res;
+        }
+        /// <summary>
+        /// leetcode第48题，旋转图像
+        /// https://leetcode.cn/problems/rotate-image/solution/shang-xia-fan-zhuan-dui-jiao-xian-fan-zhuan-by-mit/
+        /// </summary>
+        /// <param name="matrix"></param>
+        public void L_48_Rotate(int[][] matrix)
+        {
+            /*
+            简单思路：
+
+            1。先上下反转
+            2。再对角色反转
+
+            经如： 
+            1，2，3
+            4，5，6
+            7，8，9
+
+            上下反转不是i和n-i-1两行交换，比如：长度是4，那么就是1和2交换，2和3交换，交换的次数是n/2次
+            只有3行（奇数）行时，中行那一行可以不变，比如上面1-9，[4,5,6]是不需要交换的！
+
+
+            */
+
+            if (matrix == null || matrix.Length <= 0 || matrix[0].Length <= 0) return;
+            int N = matrix.Length;
+            for (int j = 0; j < N; ++j)
+            {
+                for (int i = 0; i < N / 2; ++i)
+                {
+                    // var t = matrix[i];
+                    // matrix[i] = matrix[N - i - 1];
+                    // matrix[N - i - 1] = t;
+                    //Swap(matrix[i][j], matrix[N - i - 1][j]);
+                    Swap(ref matrix[i][j], ref matrix[N - i - 1][j]);
+                }
+            }
+            //对角线反转
+            for (int j = 1; j < N; ++j)
+            {
+                for (int i = 0; i < j; ++i)
+                {
+                    // var t = matrix[i][j];
+                    // matrix[i][j] = matrix[j][i];
+                    // matrix[j][i] = t;
+                    Swap(ref matrix[i][j], ref matrix[j][i]);
+                }
+            }
+        }
+        /// <summary>
+        /// leetcode第49题，字母异位词分组
+        /// https://leetcode.cn/problems/group-anagrams/solution/jie-by-long-yu-8-8zd0/
+        /// </summary>
+        /// <param name="strs"></param>
+        /// <returns></returns>
+        public IList<IList<string>> L_49_GroupAnagrams(string[] strs)
+        {
+            var dic = new Dictionary<string, IList<string>>();
+            IList<IList<string>> res = new List<IList<string>>();
+            for (int i = 0; i < strs.Length; i++)
+            {
+                char[] a = strs[i].ToArray();
+                Array.Sort(a);
+                string str = String.Join("", a.Select(x => x.ToString()).ToArray());
+                if (dic.ContainsKey(str))
+                {
+                    dic[str].Add(strs[i]);
+                }
+                else
+                {
+                    dic[str] = new List<string> { strs[i] };
+                }
+
+            }
+            foreach (var item in dic.Keys)
+            {
+                res.Add(dic[item]);
+            }
+            return res;
+        }
+        /// <summary>
+        /// leetcode第50题，POW(X,N)即X的N次方
+        /// https://leetcode.cn/problems/powx-n/solution/powx-n-fen-zhi-di-gui-yu-die-dai-by-da-za-cao/
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public double L_50_MyPow(double x, int n)
+        {
+            /*
+            分治
+            pow(x, n):
+                x^(n/2) * x^(n/2)       n 为偶数
+                x * x^(n/2) * x^(n/2)   n 为奇数
+        */
+        if(x == 0) {
+            return 0;
+        }
+        if(n == 0) {
+            return 1;
+        }
+        long b = n;
+        if(b < 0) {
+            b = -b;
+            x = 1.0/x;
+        }
+
+        double ans = 1.0;
+        while(b > 0) {
+            if(b % 2 == 1) ans *= x;
+            x *= x;
+            b = b / 2;
+        }
+        return ans; 
+        }
         
         
         //TODO待添加算法处
