@@ -1746,28 +1746,180 @@ namespace Yan
                 x^(n/2) * x^(n/2)       n 为偶数
                 x * x^(n/2) * x^(n/2)   n 为奇数
         */
-        if(x == 0) {
-            return 0;
+            if (x == 0)
+            {
+                return 0;
+            }
+            if (n == 0)
+            {
+                return 1;
+            }
+            long b = n;
+            if (b < 0)
+            {
+                b = -b;
+                x = 1.0 / x;
+            }
+
+            double ans = 1.0;
+            while (b > 0)
+            {
+                if (b % 2 == 1) ans *= x;
+                x *= x;
+                b = b / 2;
+            }
+            return ans;
         }
-        if(n == 0) {
-            return 1;
+        /// <summary>
+        /// leetcode第51题，N皇后
+        /// https://leetcode.cn/problems/n-queens/solution/c-po-su-de-de-di-gui-by-wei-shou-shou-er-v/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public IList<IList<string>> L_51_SolveNQueens(int n)
+        {
+            int[][] cb = new int[n][];
+            for (int i = 0; i < n; i++) cb[i] = new int[n];
+            var result = new List<IList<string>>();
+            TryDown(cb, 0);
+            return result;
+
+            void TryDown(int[][] tcb, int y)
+            {
+                //递归终止
+                if (y >= n) //把二维数组转换为字符数组
+                    result.Add(tcb.Select(a => new string(a.Select(
+                        b => b == 0 ? 'Q' : '.').ToArray())).ToList());
+                else
+                    for (int i = 0; i < n; i++)
+                        if (tcb[y][i] == 0)
+                        {
+                            int[][] ccb = tcb.Select(a => a.Clone() as int[]).ToArray();
+                            Down(ccb, y, i);//落子
+                            TryDown(ccb, y + 1);//逐行遍历可落子点
+                        }
+            }
         }
-        long b = n;
-        if(b < 0) {
-            b = -b;
-            x = 1.0/x;
+        /// <summary>
+        /// leetcode第52题，N皇后Ⅱ
+        /// https://leetcode.cn/problems/n-queens-ii/solution/wei-yun-suan-by-anlll-8b32/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public int L_52_TotalNQueens(int n)
+        {
+            if (n < 1) return 0;
+            DFS(0, 0, 0, 0, n);
+            return len;
+        }
+        /// <summary>
+        /// leetcode第53题，最大子序和
+        /// https://leetcode.cn/problems/maximum-subarray/solution/zui-da-zi-xu-he-by-leetcode-solution/
+        /// </summary>
+        /// <returns></returns>
+        public int L_53_MaxSubArray(int[] nums)
+        {
+            int pre = 0, maxAns = nums[0];
+            foreach (int x in nums)
+            {
+                pre = Math.Max(pre + x, x);
+                maxAns = Math.Max(maxAns, pre);
+            }
+            return maxAns;
+        }
+        /// <summary>
+        /// leetcode第54题，螺旋矩阵
+        /// https://leetcode.cn/problems/spiral-matrix/solution/xun-huan-bian-li-by-qiu-xing-chen-lfyn/
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public IList<int> L_54_SpiralOrder(int[][] matrix)
+        {
+            IList<int> ans = new List<int>();
+            int row = matrix[0].Length;
+            int col = matrix.Length;
+            int count = 0;
+            //循环内部索引
+            int x = 0;
+            int y = 0;
+            string way = "left";
+            //开始循环遍历索取元素
+            while (count < row * col)
+            {
+                ans.Add(matrix[x][y]);
+                matrix[x][y] = int.MaxValue;
+                count++;
+                switch (way)
+                {
+                    //向右取值条件
+                    case "left":
+                        if (y == row - 1 || matrix[x][y + 1] == int.MaxValue) { way = "down"; x++; }
+                        else y++;
+                        break;
+                    //向下取值条件
+                    case "down":
+                        if (x == col - 1 || matrix[x + 1][y] == int.MaxValue) { way = "right"; y--; }
+                        else x++;
+                        break;
+                    //向左取值条件
+                    case "right":
+                        if (y == 0 || matrix[x][y - 1] == int.MaxValue) { way = "up"; x--; }
+                        else y--;
+                        break;
+                    //向上取值条件
+                    case "up":
+                        if (x == 0 || matrix[x - 1][y] == int.MaxValue) { way = "left"; y++; }
+                        else x--;
+                        break;
+                }
+            }
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第55题，跳跃游戏
+        /// https://leetcode.cn/problems/jump-game/solution/tan-xin-mei-ci-ji-lu-neng-gou-da-dao-de-zui-yuan-w/
+        /// </summary>
+        /// <returns></returns>
+        public bool L_55_CanJump(int[] nums)
+        {
+            if (nums == null || nums.Length <= 0) return false;
+
+            /*
+
+            每一次计算当前数字所能达到的最远距离，由下标+值组成
+
+            如果max < i，说明当前最大值，到不了i这个位置，那么后面就不需要判断了
+
+            最后返回 true 即可，因为中间 i > max 不成立，就说明整个数组遍历一次，都通过了
+
+            比如：[3,2,1,0,4]
+
+            0 + 3 = 3 max = 3
+            1 + 2 = 3 max = 3
+            2 + 1 = 3 max = 3
+            3 + 0 = 3 max = 3
+            到达4时，4 > max 返回false
+
+            [2,3,1,1,4]
+
+            0 + 2 = 2 max = 2
+            1 + 3 = 4 max = 4
+            2 + 1 = 3 max = 4
+            3 + 1 = 4 max = 4
+            最后一步，4 > max ? 不成立，循环结束，返回true
+
+            */
+
+            int max = 0;
+            for (int i = 0; i < nums.Length; ++i)
+            {
+                if (i > max) return false;
+                max = Math.Max(max, i + nums[i]);
+            }
+            return true;
         }
 
-        double ans = 1.0;
-        while(b > 0) {
-            if(b % 2 == 1) ans *= x;
-            x *= x;
-            b = b / 2;
-        }
-        return ans; 
-        }
-        
-        
+
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -1906,6 +2058,47 @@ namespace Yan
                 l = l.next;
             }
             Console.WriteLine("");
+        }
+        /// <summary>
+        /// 于L_52_TotalNQueens中调用
+        /// </summary>
+        private void DFS(int row, int col, int pie, int na, int n)
+        {
+            if (row >= n)
+            {
+                len++;
+                return;
+            }
+            // 得到空位.
+            int bits = (~(col | pie | na)) & ((1 << n) - 1);
+            while (bits > 0)
+            {
+                // 得到1个空位.
+                int p = bits & (-bits);
+                DFS(row + 1, col | p, (pie | p) << 1, (na | p) >> 1, n);
+                // 去掉最后一位的1.
+                bits = bits & (bits - 1);
+            }
+        }
+        /// <summary>
+        /// 落子，于L_50_SolveNQueens方法中调用
+        /// </summary>
+        /// <param name="cb"></param>
+        /// <param name="y"></param>
+        /// <param name="x"></param>
+        private void Down(int[][] cb, int y, int x)
+        {
+            int len = cb.GetLength(0);
+            for (int i = 0; i < len; i++)
+            {
+                cb[y][i] = 1;
+                cb[i][x] = 1;
+                if (x + i < len && y + i < len) cb[y + i][x + i] = 1;
+                if (x + i < len && y - i >= 0) cb[y - i][x + i] = 1;
+                if (x - i >= 0 && y - i >= 0) cb[y - i][x - i] = 1;
+                if (x - i >= 0 && y + i < len) cb[y + i][x - i] = 1;
+            }
+            cb[y][x] = 0;//将落子点置为0,方便后续遍历得到皇后的位置
         }
         /// <summary>
         /// 于L_39_CombinationSum中调用
