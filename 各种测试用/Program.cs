@@ -13,7 +13,7 @@ namespace 各种测试用
 
             Algorithm AL = new Algorithm();
             Methodlibrary ml = new Methodlibrary();
-            
+
             // ListNote链表部分使用例子
             // var a = AL.generateList(new int[] { 2,1,6,5,4,9,8,7,3});
             // var d = AL.L_25_ReverseKGroup(a,2);
@@ -21,10 +21,16 @@ namespace 各种测试用
 
             //非链表部分使用例子
             // int[] a = {2,1,6,5,4,9,8,7,3};
-            // AL.bubbleSort(a);
+
+            // int[][] a = AL.L_59_GenerateMatrix(4);
             // foreach (var item in a)
             // {
-            //     Console.Write($"{item},");
+            //     // Console.Write($"{item},");
+            //     foreach (var m_item in item)
+            //     {
+
+            //         Console.Write("{0}  ", m_item);
+            //     }
             // }
 
             Console.WriteLine();

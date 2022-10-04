@@ -1918,8 +1918,227 @@ namespace Yan
             }
             return true;
         }
+        /// <summary>
+        /// leetcode第56题，合并区间
+        /// https://leetcode.cn/problems/merge-intervals/solution/he-bing-qu-jian-qu-jian-zuo-bian-jie-pai-xu-bian-l/
+        /// </summary>
+        /// <param name="intervals"></param>
+        /// <returns></returns>
+        public int[][] L_56_Merge(int[][] intervals)
+        {
+            if (intervals.Length == 0)
+            {
+                return intervals;
+            }
+            /*基于每个区间左边界完成数组排序，保证区间左边界越小的越靠近左边。*/
+            intervals = intervals.OrderBy(p => p[0]).ToArray();
+            /*遍历数组，比较相邻区间是否能合并。如果左区间的右边界不小于右区间的左边界，则左右区间可以合并。*/
+            List<int[]> list = new List<int[]>();
+            for (int i = 0; i < intervals.Length - 1; i++)
+            {
+                /*
+                左区间的右边界不小于右区间的左边界，则区间可以合并。将右区间作为合并后结果，
+                则更新右区间的左边界为左区间的左边界。
+                */
+                if (intervals[i][1] >= intervals[i + 1][0])
+                {
+                    intervals[i + 1][0] = intervals[i][0];
+                    /*左区间的右边界不小于右区间的右边界，则右区间的右边界更新为左区间的右边界。*/
+                    if (intervals[i][1] >= intervals[i + 1][1])
+                    {
+                        intervals[i + 1][1] = intervals[i][1];
+                    }
+                }
+                /*左区间的右边界小于右区间的左边界，则左区间不能与右区间合并，将左区间添加到结果数组中。*/
+                else
+                {
+                    list.Add(intervals[i]);
+                }
+            }
+            /*将数组中最后一个元素添加到结果中。*/
+            list.Add(intervals[intervals.Length - 1]);
 
-
+            int[][] result = list.ToArray();
+            return result;
+        }
+        /// <summary>
+        /// leetcode第57题，插入区间
+        /// https://leetcode.cn/problems/insert-interval/solution/c-bian-yu-li-jie-de-fang-fa-zhi-xing-yong-shi-300-/
+        /// </summary>
+        /// <param name="intervals"></param>
+        /// <param name="newInterval"></param>
+        /// <returns></returns>
+        public int[][] L_57_Insert(int[][] intervals, int[] newInterval)
+        {
+            if (intervals.Length == 0) return new int[][] { new int[] { newInterval[0], newInterval[1] } };
+            int n = intervals.Length;
+            //用left和right记录新区间的左端和右端
+            int left = newInterval[0];
+            int right = newInterval[1];
+            bool isTrue = false;
+            List<int[]> resultList = new List<int[]>();
+            for (int i = 0; i < n; i++)
+            {
+                //找到left存在于原数组的哪个区间中，将左端对其。
+                //left = 原属组区间的左端
+                //可能right也在此区间，所以不continue
+                if (left >= intervals[i][0] && left <= intervals[i][1])
+                {
+                    left = intervals[i][0];
+                }
+                //找到right在原数组的哪个区间中，右端对其。
+                if (right >= intervals[i][0] && right <= intervals[i][1])
+                {
+                    right = intervals[i][1];
+                    continue;
+                }
+                //原数组的区间在新区间内，直接continue，不做记录。
+                if (intervals[i][0] > left && intervals[i][0] < right)
+                {
+                    continue;
+                }
+                //新区间之后的所有区间，记录进list中
+                //第一次需要将新区间合并后的区间记录下来。
+                if (intervals[i][0] > right)
+                {
+                    if (!isTrue)
+                    {
+                        resultList.Add(new int[] { left, right });
+                        isTrue = true;
+                    }
+                    resultList.Add(new int[] { intervals[i][0], intervals[i][1] });
+                    continue;
+                }
+                //新区间之前的所有区间，记录进list中
+                if (intervals[i][1] < left)
+                {
+                    resultList.Add(new int[] { intervals[i][0], intervals[i][1] });
+                    continue;
+                }
+            }
+            //若没有新区间之后的区间，
+            //将合并后的新区间加到list中
+            if (!isTrue)
+            {
+                resultList.Add(new int[] { left, right });
+                isTrue = true;
+            }
+            return resultList.ToArray();
+        }
+        /// <summary>
+        /// leetcode第58题，最后一个单词的长度
+        /// https://leetcode.cn/problems/length-of-last-word/solution/zui-hou-yi-ge-dan-ci-de-chang-du-by-leet-51ih/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public int L_58_LengthOfLastWord(string s)
+        {
+            int index = s.Length - 1;
+            while (s[index] == ' ')
+            {
+                index--;
+            }
+            int wordLength = 0;
+            while (index >= 0 && s[index] != ' ')
+            {
+                wordLength++;
+                index--;
+            }
+            return wordLength;
+        }
+        /// <summary>
+        /// leetcode第59题，螺旋矩阵Ⅱ
+        /// https://leetcode.cn/problems/spiral-matrix-ii/solution/jian-dan-zhi-jie-by-nice-chebyshev7ep-5as2/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public int[][] L_59_GenerateMatrix(int n)
+        {
+            int[][] res = new int[n][];
+            for (int i = 0; i < n; i++)
+            {
+                res[i] = new int[n];
+            }
+            int lC = n;//剩余列长度
+            int hC = n;//剩余行长度
+            int l = 0;//当前的列位置
+            int h = 0;//当前的行位置
+            int num = 1;//该位置上的数字
+            while (lC > 0 && hC > 0)
+            {
+                for (int i = 0; i < lC; i++, l++, num++)//从第一行开始从左往右放数字
+                {
+                    res[h][l] = num;
+                }
+                l--;//调整下一个位置
+                h++;
+                hC--;
+                if (hC == 0)//判断结束，总行数和总列数一样，而列数先减少，所以剩余行数会比剩余列数快减少至0
+                {
+                    break;
+                }
+                for (int i = 0; i < hC; i++, h++, num++)//从最后一列开始从上到下放数字
+                {
+                    res[h][l] = num;
+                }
+                h--;
+                l--;
+                lC--;
+                for (int i = 0; i < lC; i++, l--, num++)
+                {
+                    res[h][l] = num;
+                }
+                l++;
+                h--;
+                hC--;
+                if (hC == 0)
+                {
+                    break;
+                }
+                for (int i = 0; i < hC; i++, h--, num++)
+                {
+                    res[h][l] = num;
+                }
+                h++;
+                l++;
+                lC--;
+            }
+            return res;
+        }
+        /// <summary>
+        /// leetcode第60题，排序序列
+        /// https://leetcode.cn/problems/permutation-sequence/solution/shu-xue-jie-fa-by-qiu-xing-chen-lpxl/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="k"></param>
+        /// <returns></returns>
+        public string L_60_GetPermutation(int n, int k)
+        {
+            string str = "";
+            int nNum = 1;
+            List<int> nList = new List<int>();
+            k--;
+            for (int i = 1; i <= n; i++)
+            {
+                nNum *= i;
+                nList.Add(i);
+            }
+            while (n > 0)
+            {
+                nNum /= n;
+                //加入第N位字母
+                str += nList[k / nNum].ToString();
+                //列表移除第N位字母
+                nList.RemoveAt(k / nNum);
+                //取余剩下多少位
+                k %= nNum;
+                //计数器减减
+                n--;
+            }
+            return str;
+    }
+        
+        
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
