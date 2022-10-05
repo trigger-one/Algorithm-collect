@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 namespace Yan
 {
     /// <summary>
@@ -35,6 +36,10 @@ namespace Yan
         /// 于L_37_SolveSudoku中调用
         /// </summary>
         char[][] boardAllres = null;
+        /// <summary>
+        /// 于L_65_IsNumber调用
+        /// </summary>
+        private static Regex pattern = new Regex(@"^\s*[+-]?(?:\d+|(?=\.\d))(?:\.\d*)?(?:e[+-]?\d+)?\s*$");
 
         /// <summary>
         ///  1+2+3+....+n的递归算法
@@ -2136,7 +2141,153 @@ namespace Yan
                 n--;
             }
             return str;
-    }
+        }
+        /// <summary>
+        /// leetcode第61题，旋转链表
+        /// https://leetcode.cn/problems/rotate-list/solution/by-persona-xi-6tbt/
+        /// </summary>
+        /// <param name="head"></param>
+        /// <param name="k"></param>
+        /// <returns></returns>
+        public ListNode L_61_RotateRight(ListNode head, int k)
+        {
+            if (head == null || k == 0)
+                return head;
+            ListNode cur = head;
+            ListNode pre = null;
+            int count = 1;
+            while (cur.next != null)
+            {
+                cur = cur.next;
+                count++;
+            }
+            if (k >= count)
+            {
+                k %= count;
+            }
+            cur.next = head;
+            while (count - k > 0)
+            {
+                pre = head;
+                head = head.next;
+                count--;
+            }
+            pre.next = null;
+            return head;
+        }
+        /// <summary>
+        /// leetcode第62题，不同路径
+        /// https://leetcode.cn/problems/unique-paths/solution/c-dong-tai-gui-hua-by-jian-wei-z-beb0/
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public int L_62_UniquePaths(int m, int n)
+        {
+            ///  1、创建 1*n 维 数组 dp，代表第一行 全部为1
+            int[] dp = new int[n];
+            Array.Fill(dp, 1);
+
+            /// 2、loop i列 -> （1, m） dp[j] += dp[j-1]
+            for (int i = 1; i < m; i++)
+                for (int j = 1; j < n; j++)
+                    dp[j] += dp[j - 1];
+
+            /// 3、输出 dp[n-1]
+            return dp[n - 1];
+        }
+        /// <summary>
+        /// leetcode第63题，不同路径Ⅱ
+        /// https://leetcode.cn/problems/unique-paths-ii/solution/dong-tai-gui-hua-by-qiu-xing-chen-4vr1/
+        /// </summary>
+        /// <param name="obstacleGrid"></param>
+        /// <returns></returns>
+        public int L_63_UniquePathsWithObstacles(int[][] obstacleGrid)
+        {
+            //初始化动态规划数组
+            int m = obstacleGrid.GetLength(0);
+            int n = obstacleGrid[0].Length;
+            int[,] ans = new int[m, n];
+
+            //对第一行进行操作赋值
+            for (int i = 0; i < n; i++)
+            {
+                if (obstacleGrid[0][i] == 1)
+                {
+                    for (int j = i; j < n; j++)
+                    {
+                        ans[0, j] = 0;
+                    }
+                    break;
+                }
+                else ans[0, i] = 1;
+            }
+            //对第一列进行操作赋值
+            for (int i = 0; i < m; i++)
+            {
+                if (obstacleGrid[i][0] == 1)
+                {
+                    for (int j = i; j < m; j++)
+                    {
+                        ans[j, 0] = 0;
+                    }
+                    break;
+                }
+                else ans[i, 0] = 1;
+            }
+            //填充整体矩阵
+            for (int i = 1; i < m; i++)
+            {
+                for (int j = 1; j < n; j++)
+                {
+                    ans[i, j] = obstacleGrid[i][j] == 1 ? 0 : ans[i, j - 1] + ans[i - 1, j];
+                }
+            }
+            return ans[m - 1, n - 1];
+        }
+        /// <summary>
+        /// leetcode第64题，最小路径和
+        /// https://leetcode.cn/problems/minimum-path-sum/solution/zui-xiao-lu-jing-he-dong-tai-gui-hua-you-0n6d/
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <returns></returns>
+        public int L_64_MinPathSum(int[][] grid)
+        {
+            int[] minValue = new int[grid[0].Length]; //状态数组
+            for (int i = 0; i < grid.Length; ++i)
+            {
+                for (int j = 0; j < grid[0].Length; ++j)
+                {
+                    if (i == 0 && j == 0)
+                    { //首元素
+                        minValue[j] = grid[0][0];
+                    }
+                    else if (i == 0 && j != 0)
+                    { //顶边缘
+                        minValue[j] = minValue[j - 1] + grid[i][j];
+                    }
+                    else if (i != 0 && j == 0)
+                    { //左边缘
+                        minValue[j] += grid[i][j];
+                    }
+                    else
+                    {
+                        minValue[j] = Math.Min(minValue[j], minValue[j - 1]) + grid[i][j];
+                    }
+                }
+            }
+            return minValue[minValue.Length - 1];
+        }
+        /// <summary>
+        /// leetcode第65题，有效数字
+        /// https://leetcode.cn/problems/valid-number/solution/zheng-ze-biao-da-shi-jie-da-by-dremoralord/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public bool L_65_IsNumber(string s)
+        {
+            return pattern.IsMatch(s);
+        }
         
         
         //TODO待添加算法处
