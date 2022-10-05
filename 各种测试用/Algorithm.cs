@@ -2149,12 +2149,12 @@ namespace Yan
         /// <param name="head"></param>
         /// <param name="k"></param>
         /// <returns></returns>
-        public ListNode L_61_RotateRight(ListNode head, int k)
+        public ListNode L_61_RotateRight(ListNode? head, int k)
         {
             if (head == null || k == 0)
                 return head;
             ListNode cur = head;
-            ListNode pre = null;
+            ListNode? pre = null;
             int count = 1;
             while (cur.next != null)
             {
