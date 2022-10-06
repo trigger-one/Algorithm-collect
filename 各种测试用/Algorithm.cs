@@ -2288,6 +2288,148 @@ namespace Yan
         {
             return pattern.IsMatch(s);
         }
+        /// <summary>
+        /// leetcode第66题，加一
+        /// https://leetcode.cn/problems/plus-one/solution/jia-yi-by-leetcode-solution-2hor/
+        /// </summary>
+        /// <param name="digits"></param>
+        /// <returns></returns>
+        public int[] L_66_PlusOne(int[] digits)
+        {
+            int n = digits.Length;
+            for (int i = n - 1; i >= 0; --i)
+            {
+                if (digits[i] != 9)
+                {
+                    ++digits[i];
+                    for (int j = i + 1; j < n; ++j)
+                    {
+                        digits[j] = 0;
+                    }
+                    return digits;
+                }
+            }
+
+            // digits 中所有的元素均为 9
+            int[] ans = new int[n + 1];
+            ans[0] = 1;
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第67题，二进制求和
+        /// https://leetcode.cn/problems/add-binary/solution/c-wo-xi-huan-de-fang-fa-by-wuhazjc-6i2m/
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public string L_67_AddBinary(string a, string b)
+        {
+            if (string.IsNullOrEmpty(a) || string.IsNullOrEmpty(b)) return string.Empty;
+            var result = new Stack<char>();
+            int sum = 0;
+            int i = a.Length - 1;
+            int j = b.Length - 1;
+
+            while (i >= 0 || j >= 0)
+            {
+                sum += i >= 0 ? a[i--] - '0' : 0;
+                sum += j >= 0 ? b[j--] - '0' : 0;
+                result.Push((sum % 2 == 0) ? '0' : '1');
+                //右移一位，留下进位位。
+                sum >>= 1;
+            }
+            if (sum == 1) result.Push('1');
+            //倒序输出 栈后进先出
+            return new string(result.ToArray());
+        }
+        /// <summary>
+        /// leetcode第68题，文本左右对齐
+        /// https://leetcode.cn/problems/text-justification/solution/cshi-jian-chao-guo-100-by-qiu-xing-chen-6n9i/
+        /// </summary>
+        /// <param name="words"></param>
+        /// <param name="maxWidth"></param>
+        /// <returns></returns>
+        public IList<string> L_68_FullJustify(string[] words, int maxWidth)
+        {
+            //定义相应的变量
+            int n = words.Length;
+            int[] nList = new int[n];
+            IList<string> ans = new List<string>();
+            //统计所有字符串长度
+            for (int i = 0; i < n; i++)
+            {
+                nList[i] = words[i].Length;
+            }
+            //遍历长度数组进行分组
+            int start = 0;
+            int sLen = 0;
+            for (int i = 0; i < n; i++)
+            {
+                sLen += nList[i] + 1;
+                //如果加入当前字符后长度刚好符合则进行排列
+                if (sLen == maxWidth || sLen - 1 == maxWidth)
+                {
+                    ans.Add(Rank(words, start, i, nList, maxWidth));
+                    start = i + 1;
+                    sLen = 0;
+                }
+                //如果加入当前字符串后长度超出则对[start,end-1]进行排列
+                else if (sLen - 1 > maxWidth)
+                {
+                    ans.Add(Rank(words, start, i - 1, nList, maxWidth));
+                    start = i;
+                    sLen = nList[i] + 1;
+                }
+            }
+            //对于最后一行元素
+            if (sLen != 0)
+            {
+                ans.Add(Rank(words, start, n - 1, nList, maxWidth, true));
+            }
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第69题，X的平方根
+        /// https://leetcode.cn/problems/sqrtx/solution/69xde-ping-fang-gen-sui-ran-si-lu-jian-d-jdbk/
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public int L_69_MySqrt(int x)
+        {
+            //如果mid*mid<=x，且(mid+1)*(mid+1)>x，mid即为目标
+            if (x < 2) return x;//0,1
+            int left = 1;
+            int right = x / 2;
+            while (left < right)//细节
+            {
+                int mid = left + (right + 1 - left) / 2;//细节：向上取整避免死循环
+                if (mid > x / mid) //细节：避免溢出 mid*mid>x的话，mid值过大
+                    right = mid - 1;//mid值比平方根大
+                else
+                    left = mid;//细节：mid已经向上取整了，left会变大，所以这里不会死循环
+            }
+            return left;
+
+        }
+        /// <summary>
+        /// leetcode第70题，爬楼梯
+        /// https://leetcode.cn/problems/climbing-stairs/solution/huan-cun-di-gui-fa-he-dong-tai-gui-hua-f-r4vq/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public int L_70_ClimbStairs(int n)
+        {
+            if (n < 3) return n;
+            int i = 3, f1 = 1, f2 = 2, f3 = f1 + f2;
+            while (i <= n)
+            {
+                f3 = f1 + f2;
+                f1 = f2;
+                f2 = f3;
+                i++;
+            }
+            return f3;
+        }
         
         
         //TODO待添加算法处
@@ -2428,6 +2570,76 @@ namespace Yan
                 l = l.next;
             }
             Console.WriteLine("");
+        }
+
+        /// <summary>
+        /// 于L_68_FullJustify中调用，对序列进行排序
+        /// </summary>
+        private string Rank(string[] words, int start, int end, int[] nList, int maxvalue, bool last = false)
+        {
+            string ans = "";
+            if (last)
+            {
+                for (int i = start; i < end; i++)
+                {
+                    ans += words[i] + " ";
+                }
+                ans += words[end];
+                //对于最后一行补空格
+                while (ans.Length != maxvalue)
+                {
+                    ans += " ";
+                }
+            }
+            //不是最后一行则进行相应排序方法
+            else
+            {
+                //统计字符串个数,长度
+                int n = end - start + 1;
+
+                //如果n==1
+                if (n == 1)
+                {
+                    ans = words[start];
+                    while (ans.Length != maxvalue)
+                    {
+                        ans += " ";
+                    }
+                    return ans;
+                }
+
+                int nums = 0;
+                for (int i = start; i <= end; i++)
+                {
+                    nums += nList[i];
+                }
+                //计算间隔
+                int k = maxvalue - nums;
+                //平均间隔
+                int meank = k / Math.Max((n - 1), 1);
+                string x = "";
+                for (int i = 0; i < meank; i++)
+                {
+                    x += " ";
+                }
+                int upk = k % Math.Max((n - 1), 1);
+                for (int i = 0; i < n; i++)
+                {
+                    if (i < upk)
+                    {
+                        ans += words[i + start] + x + " ";
+                    }
+                    else if (i >= upk && i < n - 1)
+                    {
+                        ans += words[i + start] + x;
+                    }
+                    else
+                    {
+                        ans += words[i + start];
+                    }
+                }
+            }
+            return ans;
         }
         /// <summary>
         /// 于L_52_TotalNQueens中调用
