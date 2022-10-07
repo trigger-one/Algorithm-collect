@@ -2430,6 +2430,164 @@ namespace Yan
             }
             return f3;
         }
+        /// <summary>
+        /// leetcode第71题，简化路径
+        /// https://leetcode.cn/problems/simplify-path/solution/jian-hua-lu-jing-by-leetcode-solution-aucq/
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public string L_71_SimplifyPath(string path)
+        {
+            string[] names = path.Split("/");
+            IList<string> stack = new List<string>();
+            foreach (string name in names)
+            {
+                if ("..".Equals(name))
+                {
+                    if (stack.Count > 0)
+                    {
+                        stack.RemoveAt(stack.Count - 1);
+                    }
+                }
+                else if (name.Length > 0 && !".".Equals(name))
+                {
+                    stack.Add(name);
+                }
+            }
+            StringBuilder ans = new StringBuilder();
+            if (stack.Count == 0)
+            {
+                ans.Append('/');
+            }
+            else
+            {
+                foreach (string name in stack)
+                {
+                    ans.Append('/');
+                    ans.Append(name);
+                }
+            }
+            return ans.ToString();
+        }
+        /// <summary>
+        /// leetcode第72题，编辑距离
+        /// https://leetcode.cn/problems/edit-distance/solution/cshuang-99-by-jaden-6-l170/
+        /// </summary>
+        /// <param name="word1"></param>
+        /// <param name="word2"></param>
+        /// <returns></returns>
+        public int L_72_MinDistance(string word1, string word2)
+        {
+            int[] dp = new int[word2.Length + 1];
+            for (int i = 0; i <= word1.Length; i++)
+            {
+                int leftUp = dp[0];
+                dp[0] = i;
+                for (int j = 1; j <= word2.Length; j++)
+                {
+                    if (i == 0) dp[j] = j;
+                    else (dp[j], leftUp) = (Math.Min(Math.Min(dp[j] + 1, dp[j - 1] + 1), leftUp + (word1[i - 1] == word2[j - 1] ? 0 : 1)), dp[j]);
+                }
+            }
+            return dp[word2.Length];
+        }
+        /// <summary>
+        /// leetcode第73题，矩阵置零
+        /// https://leetcode.cn/problems/set-matrix-zeroes/solution/ju-zhen-zhi-ling-by-leetcode-solution-9ll7/
+        /// </summary>
+        /// <param name="matrix"></param>
+        public void L_73_SetZeroes(int[][] matrix)
+        {
+            int m = matrix.Length, n = matrix[0].Length;
+            bool[] row = new bool[m];
+            bool[] col = new bool[n];
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (matrix[i][j] == 0)
+                    {
+                        row[i] = col[j] = true;
+                    }
+                }
+            }
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (row[i] || col[j])
+                    {
+                        matrix[i][j] = 0;
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// leetcode第74题，搜索二维矩阵
+        /// https://leetcode.cn/problems/search-a-2d-matrix/solution/74-sou-suo-er-wei-ju-zhen-by-hello-world-f00t/
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public bool L_74_SearchMatrix(int[][] matrix, int target)
+        {
+            // 找到k 使得matrix[k][0] <= target < matrix[k+1][0]
+            // 升序数组中找<=target的最大索引
+            var left = 0;
+            var right = matrix.Length - 1;
+            while (left < right)
+            {
+                var half = (left + right + 1) / 2;
+                if (matrix[half][0] > target)
+                {
+                    // k < half => 查询[left, half - 1]
+                    right = half - 1;
+                }
+                else
+                {
+                    // k >= half 查询[half, right]
+                    left = half;
+                }
+            }
+            var k = left;
+            // 找到l 使得matrix[k][l] == target
+            left = 0;
+            right = matrix[k].Length - 1;
+            while (left < right)
+            {
+                var half = (left + right) / 2;
+                if (matrix[k][half] < target)
+                {
+                    left = half + 1;
+                }
+                else
+                {
+                    right = half;
+                }
+            }
+            return matrix[k][left] == target;
+        }
+        /// <summary>
+        /// leetcode第75题，颜色分类
+        /// https://leetcode.cn/problems/sort-colors/solution/75-yan-se-fen-lei-by-haiyuecsdn-90jr/
+        /// </summary>
+        /// <param name="nums"></param>
+        public void L_75_SortColors(int[] nums)
+        {
+            int[] count = new int[3];
+            foreach (var i in nums)
+            {
+                count[i]++;
+            }
+            int k = 0;
+            //共有n种数
+            for (int i = 0; i < count.Length; i++)
+            {
+                //每种数有m个
+                for (int j = 0; j < count[i]; j++)
+                    nums[k++] = i;
+            }
+        }
         
         
         //TODO待添加算法处
