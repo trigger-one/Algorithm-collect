@@ -37,6 +37,11 @@ namespace Yan
         /// </summary>
         char[][] boardAllres = null;
         /// <summary>
+        /// 于L_79_Exist中调用
+        /// </summary>
+        int[][] direction = new int[][] { new int[] { 0, -1 }, new int[] { 1, 0 }, new int[] { 0, 1 }, new int[] { -1, 0 } };
+
+        /// <summary>
         /// 于L_65_IsNumber调用
         /// </summary>
         private static Regex pattern = new Regex(@"^\s*[+-]?(?:\d+|(?=\.\d))(?:\.\d*)?(?:e[+-]?\d+)?\s*$");
@@ -2588,8 +2593,288 @@ namespace Yan
                     nums[k++] = i;
             }
         }
-        
-        
+        /// <summary>
+        /// leetcode第76题，最小覆盖字串
+        /// https://leetcode.cn/problems/minimum-window-substring/solution/yi-ci-bian-li-c-nei-cun-xiao-hao-268-mb-ji-bai-lia/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public string L_76_MinWindow(string s, string t)
+        {
+            Dictionary<char, List<int>> dicT = new Dictionary<char, List<int>>();
+            string res = s + "end";
+
+            for (var i = 0; i < t.Length; i++)
+            {
+                if (!dicT.ContainsKey(t[i]))
+                    dicT.Add(t[i], new List<int>() { 1 });
+                else
+                    dicT[t[i]][0] += 1;
+            }
+
+
+            for (var j = 0; j < s.Length; j++)
+            {
+                if (dicT.ContainsKey(s[j]))
+                {
+                    dicT[s[j]].Add(j);
+
+                    var fullhead = j;
+                    foreach (var item in dicT)
+                    {
+                        if (item.Value.Count() <= item.Value[0])
+                        {
+                            fullhead = -1;
+                            break;
+                        }
+                        else
+                            fullhead = Math.Min(item.Value[item.Value.Count() - item.Value[0]], fullhead);
+                    }
+
+                    if (fullhead != -1 && res.Length > j - fullhead + 1)
+                        res = s.Substring(fullhead, j - fullhead + 1);
+                }
+            }
+
+            if (res.Length <= s.Length)
+                return res;
+            else
+                return "";
+        }
+        /// <summary>
+        /// leetcode第77题，组合
+        /// https://leetcode.cn/problems/combinations/solution/dfs-by-vic56/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <param name="k"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_77_Combine(int n, int k)
+        {
+            var res = new List<IList<int>>();
+            recruion(1, n, k, new int[k], res);
+            return res;
+        }
+        /// <summary>
+        /// leetcode第78题，子集
+        /// https://leetcode.cn/problems/subsets/solution/dfs-with-c-by-shou-zhong-guo-guang-2-2qi0/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_78_Subsets(int[] nums)
+        {
+            List<IList<int>> res = new List<IList<int>>();
+            List<int> track = new List<int>();
+            void BackTrack(int start)
+            {
+                res.Add(new List<int>(track));
+                for (int i = start; i < nums.Length; i++)
+                {
+                    track.Add(nums[i]);
+                    BackTrack(i + 1);
+                    track.RemoveAt(track.Count - 1);
+                }
+            }
+            BackTrack(0);
+            return res;
+        }
+        /// <summary>
+        /// leetcode第79题，单词搜索
+        /// https://leetcode.cn/problems/word-search/solution/79-dan-ci-sou-suo-c-by-kas233-km6s/
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public bool L_79_Exist(char[][] board, string word)
+        {
+            var temp = string.Empty;
+            for (int i = 0; i < board.Length; i++)
+            {
+                for (int j = 0; j < board[0].Length; j++)
+                {
+                    var vis = new bool[board.Length, board[0].Length];
+                    if (DFS(board, word, vis, i, j, temp))
+                        return true;
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// leetcode第80题，删除有序数组中的重复项Ⅱ
+        /// https://leetcode.cn/problems/remove-duplicates-from-sorted-array-ii/solution/tong-guo-xie-dai-ma-fang-fa-jie-jue-dai-ma-suo-nen/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public int L_80_RemoveDuplicates(int[] nums)
+        {
+            //乱七八糟的优化
+            if (nums.Length <= 2)
+                return nums.Length; ;
+            //此变量代表着循环中最近出现的数字的下标（……甲、[乙]、乙、丙…… 或 ……甲、乙、[乙]、丙……）
+            int lastNumberIndex = 1;
+            for (int i = 2; i < nums.Length; i++)
+            {
+                //判断当前循环下所取得的值是否为第二次重复出现的数字
+                if (nums[i] == nums[lastNumberIndex] && nums[lastNumberIndex] != nums[lastNumberIndex - 1])
+                {
+                    lastNumberIndex++;
+                    nums[lastNumberIndex] = nums[i];
+                }
+                else if (nums[i] != nums[lastNumberIndex])//如果这是不同于最近所出现的数字，即新数字，则在最近排序的数字后一位赋值为当前数字。注意 ++lastNumberIndex 已将 lastNumberIndex 的值更新
+                    nums[++lastNumberIndex] = nums[i]; ;
+            }
+            //最后一步，返回结果。由于数组长度大于数组最后一个索引值一个一，所以采用“所得下标值加一”的方法返回符合要求的数
+            return ++lastNumberIndex;
+        }
+        /// <summary>
+        /// leetcode第81题，搜索旋转排序数组Ⅱ
+        /// https://leetcode.cn/problems/search-in-rotated-sorted-array-ii/solution/100-by-lan-tian-zhi-yue-5i35/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public bool L_81_Search(int[] nums, int target)
+        {
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (target == nums[i])
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// leetcode第82题，删除排序链表中的重复元素Ⅱ
+        /// https://leetcode.cn/problems/remove-duplicates-from-sorted-list-ii/solution/shuang-zhi-zhen-by-bu-yao-xiong-xiong-da-2ov2/
+        /// </summary>
+        /// <param name="head"></param>
+        /// <returns></returns>
+        public ListNode L_82_DeleteDuplicates(ListNode head)
+        {
+            //双指针法
+            ListNode preHead = new ListNode(-1);
+            preHead.next = head;
+            ListNode pre = preHead;
+            while (pre.next != null)
+            {
+                ListNode curr = pre.next;
+                while (curr != null && pre.next.val == curr.val)
+                    curr = curr.next;
+
+                //不删除的情况，curr处的节点无重复，即该段节点只有一个
+                if (pre.next.next == curr) pre = pre.next;
+                else pre.next = curr;
+            }
+            return preHead.next;
+        }
+        /// <summary>
+        /// leetcode第83题，删除排序链表中的重复元素
+        /// https://leetcode.cn/problems/remove-duplicates-from-sorted-list/solution/c-solution-by-suncj550/
+        /// </summary>
+        /// <param name="head"></param>
+        /// <returns></returns>
+        public ListNode L_83_DeleteDuplicates(ListNode head)
+        {
+            if (head == null)
+            {
+                return null;
+            }
+            var rememberTop = head;
+            var next = head.next;
+            while (head != null && next != null)
+            {
+                if (next.val == head.val)
+                {
+                    next = next.next;
+                    head.next = next;
+                }
+                else
+                {
+                    head = head.next;
+                    next = head.next;
+                }
+            }
+            return rememberTop;
+        }
+        /// <summary>
+        /// leetcode第84题，柱状图中最大的矩形
+        /// https://leetcode.cn/problems/largest-rectangle-in-histogram/solution/84-zhu-zhuang-tu-zhong-zui-da-de-ju-xing-r4uu/
+        /// </summary>
+        /// <param name="heights"></param>
+        /// <returns></returns>
+        public int L_84_LargestRectangleArea(int[] heights)
+        {
+            int len = heights.Length;
+            // 特判
+            if (len == 0)
+            {
+                return 0;
+            }
+
+            int ans = 0;
+            for (int i = 0; i < len; i++)
+            {
+
+                // 找左边最后 1 个大于等于 heights[i] 的下标
+                int left = i;
+                int curHeight = heights[i];
+                while (left > 0 && heights[left - 1] >= curHeight)
+                {
+                    left--;
+                }
+
+                // 找右边最后 1 个大于等于 heights[i] 的索引
+                int right = i;
+                while (right < len - 1 && heights[right + 1] >= curHeight)
+                {
+                    right++;
+                }
+
+                int width = right - left + 1;
+                ans = Math.Max(ans, width * curHeight);
+            }
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第85题，最大矩形
+        /// https://leetcode.cn/problems/maximal-rectangle/solution/ctrlcvde-xian-yu-bao-li-jie-fa-by-0zufqi-podt/
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public int L_85_MaximalRectangle(char[][] matrix)
+        {
+            int m = matrix.Length;
+            if (m == 0) return 0;
+            int n = matrix[0].Length;
+            int[,] cube = new int[m, n];
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (matrix[i][j] == '1')
+                    {
+                        cube[i, j] = j == 0 ? 1 : cube[i, j - 1] + 1;
+                    }
+                }
+            }
+            int res = 0;
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    int w = cube[i, j];
+                    for (int k = i; k >= 0; k--)
+                    {
+                        if (cube[k, j] == 0) break;
+                        w = w < cube[k, j] ? w : cube[k, j];
+                        res = Math.Max(res, (i - k + 1) * w);
+                    }
+                }
+            }
+            return res;
+        }
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -2730,6 +3015,28 @@ namespace Yan
             Console.WriteLine("");
         }
 
+
+        /// <summary>
+        /// 于L_77_Combine中调用
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="n"></param>
+        /// <param name="k"></param>
+        /// <param name="item"></param>
+        /// <param name="res"></param>
+        private void recruion(int start, int n, int k, int[] item, IList<IList<int>> res)
+        {
+            if (k == 0)
+            {
+                res.Add(item.ToList());
+                return;
+            }
+            for (var i = start; i <= n - k + 1; i++)
+            {
+                item[item.Length - k] = i;
+                recruion(i + 1, n, k - 1, item, res);
+            }
+        }
         /// <summary>
         /// 于L_68_FullJustify中调用，对序列进行排序
         /// </summary>
@@ -2819,6 +3126,25 @@ namespace Yan
                 // 去掉最后一位的1.
                 bits = bits & (bits - 1);
             }
+        }
+        /// <summary>
+        /// 于L_79_Exist中调用
+        /// </summary>
+        private bool DFS(char[][] board, string word, bool[,] vis, int i, int j, string temp)
+        {
+            if (i < 0 || i == board.Length || j < 0 || j == board[0].Length || word[temp.Length] != board[i][j] || vis[i, j])
+                return false;
+            temp += board[i][j];
+            vis[i, j] = true;
+            if (temp.Length == word.Length)
+                return true;
+            for (int k = 0; k < direction.Length; k++)
+            {
+                if (DFS(board, word, vis, i + direction[k][0], j + direction[k][1], temp))
+                    return true;
+            }
+            vis[i, j] = false;
+            return false;
         }
         /// <summary>
         /// 落子，于L_50_SolveNQueens方法中调用
