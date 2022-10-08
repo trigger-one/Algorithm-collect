@@ -2875,6 +2875,192 @@ namespace Yan
             }
             return res;
         }
+        /// <summary>
+        /// leetcode第86题，分隔链表
+        /// https://leetcode.cn/problems/partition-list/solution/by-pan-pan-sn-dol3/
+        /// </summary>
+        /// <param name="head"></param>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public ListNode L_86_Partition(ListNode? head, int x)
+        {
+            ListNode? tempA = null;
+            ListNode? tempB = null;
+
+            while (head != null)
+            {
+                if (head.val >= x)
+                    tempA = new ListNode(head.val, tempA);//存大于等于x的数放A组
+                else tempB = new ListNode(head.val, tempB);//小于x的数放B组
+                head = head.next;
+            }
+
+            ListNode? res = null;//合并，链表顺序刚好相反，先A后B
+            while (tempA != null)
+            {
+                res = new ListNode(tempA.val, res);
+                tempA = tempA.next;
+            }
+
+            while (tempB != null)
+            {
+                res = new ListNode(tempB.val, res);
+                tempB = tempB.next;
+            }
+            return res;
+        }
+        /// <summary>
+        /// leetcode第87题，扰乱字符串
+        /// https://leetcode.cn/problems/scramble-string/solution/qu-jian-dp-by-kang-kang-49-n2t3/
+        /// </summary>
+        /// <param name="s1"></param>
+        /// <param name="s2"></param>
+        /// <returns></returns>
+        public bool L_87_IsScramble(string s1, string s2)
+        {
+            if (s1.Length != s2.Length)
+            {
+                return false;
+            }
+            int n = s1.Length;
+            bool[,,] dp = new bool[n, n, n];//[s1子串起点下标，s2子串起点下标，字串长度（0表示长度1）]
+            //初始化DP
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    dp[i, j, 0] = s1[i] == s2[j];
+                }
+            }
+            for (int l = 1; l < n; l++)
+            {
+                for (int i = 0; i < n - l; i++)
+                {
+                    for (int j = 0; j < n - l; j++)
+                    {
+                        for (int w = 1; w < l + 1; w++)
+                        {
+                            dp[i, j, l] |= dp[i, j, w - 1] && dp[i + w, j + w, l - w];
+                            dp[i, j, l] |= dp[i, j + l - w + 1, w - 1] && dp[i + w, j, l - w];
+                            if (dp[i, j, l])
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            return dp[0, 0, n - 1];
+        }
+        /// <summary>
+        /// leetcode第88题，合并两个有序数组
+        /// https://leetcode.cn/problems/merge-sorted-array/solution/shuang-zhi-zhen-vs-xian-he-bing-hou-pai-xu-by-toma/
+        /// </summary>
+        /// <param name="nums1"></param>
+        /// <param name="m"></param>
+        /// <param name="nums2"></param>
+        /// <param name="n"></param>
+        public void L_88_Merge(int[] nums1, int m, int[] nums2, int n)
+        {
+            // 备份nums1中的m个元素
+            int[] temp = new int[m];
+            for (int i = 0; i < m; i++)
+            {
+                temp[i] = nums1[i];
+            }
+            // 用于遍历temp和num2
+            int index1 = 0;
+            int index2 = 0;
+
+            for (int j = 0; j < nums1.Length; j++)
+            {
+                // 比较后将较小的放入nums1中
+                if (index1 <= m - 1 && index2 <= n - 1)
+                {
+                    if (temp[index1] > nums2[index2])
+                    {
+                        nums1[j] = nums2[index2];
+                        index2++;
+                    }
+                    else
+                    {
+                        nums1[j] = temp[index1];
+                        index1++;
+                    }
+                    // 若其中一个已全部放入，将另一个剩余的元素依次放入
+                }
+                else
+                {
+                    if (index1 == m && index2 <= n - 1)
+                    {
+                        nums1[j] = nums2[index2];
+                        index2++;
+                    }
+                    if (index2 == n && index1 <= m - 1)
+                    {
+                        nums1[j] = temp[index1];
+                        index1++;
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// leetcode第89题，格雷编码
+        /// https://leetcode.cn/problems/gray-code/solution/ge-lei-bian-ma-by-leetcode-solution-cqi7/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public IList<int> L_89_GrayCode(int n)
+        {
+            IList<int> ret = new List<int>();
+            ret.Add(0);
+            for (int i = 1; i <= n; i++)
+            {
+                int m = ret.Count;
+                for (int j = m - 1; j >= 0; j--)
+                {
+                    ret.Add(ret[j] | (1 << (i - 1)));
+                }
+            }
+            return ret;
+        }
+        /// <summary>
+        /// leetcode第90题，子集Ⅱ
+        /// https://leetcode.cn/problems/subsets-ii/solution/zi-ji-ii-by-a-liang-3a/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_90_SubsetsWithDup(int[] nums)
+        {
+            Array.Sort(nums);
+            IList<IList<int>> list = new List<IList<int>>();
+            list.Add(new List<int>());
+            List<int> l = new List<int>();
+
+            int lastpos = -1;
+
+            for (int i = 0; i < nums.Length; i++)
+            {
+                int count = list.Count;
+                int start = 0;
+                if (i > 0 && nums[i] == nums[i - 1])
+                {
+                    start = lastpos;
+                }
+                for (int j = start; j < count; j++)
+                {
+                    List<int> ll = new List<int>();
+                    for (int r = 0; r < list.ElementAt(j).Count; r++)
+                    {
+                        ll.Add(list.ElementAt(j).ElementAt(r));
+                    }
+                    ll.Add(nums[i]);
+                    list.Add(ll);
+                }
+                lastpos = count;
+            }
+            return list;
+        }
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
