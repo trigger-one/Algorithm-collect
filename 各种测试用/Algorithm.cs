@@ -9,7 +9,7 @@ namespace Yan
     {
         public int val;
         public ListNode? next;
-        public ListNode(int val, ListNode? next = null)
+        public ListNode(int val, ListNode? next)
         {
             this.val = val;
             this.next = next;
@@ -18,9 +18,9 @@ namespace Yan
     public class TreeNode
     {
         public int val;
-        public TreeNode left;
-        public TreeNode right;
-        public TreeNode(int val = 0, TreeNode left = null, TreeNode right = null)
+        public TreeNode? left;
+        public TreeNode? right;
+        public TreeNode(int val = 0, TreeNode? left = null, TreeNode? right = null)
         {
             this.val = val;
             this.left = left;
@@ -408,12 +408,12 @@ namespace Yan
         public ListNode? L_2_AddTwoNumbers(ListNode? l1, ListNode? l2)
         {
             int val = 0;
-            ListNode prenode = new ListNode(0);
+            ListNode prenode = new ListNode(0,null);
             ListNode lastnode = prenode;
             while (l1 != null || l2 != null || val != 0)
             {
                 val = val + (l1 == null ? 0 : l1.val) + (l2 == null ? 0 : l2.val);
-                lastnode.next = new ListNode(val % 10);
+                lastnode.next = new ListNode(val % 10,null);
                 lastnode = lastnode.next;
                 val = val / 10;
                 l1 = l1 == null ? null : l1.next;
@@ -862,11 +862,11 @@ namespace Yan
                 }
             }
             help.Sort();
-            ListNode res = new ListNode(0); int i = 0;
+            ListNode res = new ListNode(0,null); int i = 0;
             ListNode helpnode = res;
             while (i < help.Count())
             {
-                ListNode node = new ListNode(help[i]); i++;
+                ListNode node = new ListNode(help[i],null); i++;
                 helpnode.next = node; helpnode = helpnode.next;
             }
             return res.next;
@@ -880,7 +880,7 @@ namespace Yan
         public ListNode? L_24_SwapPairs(ListNode head)
         {
             if (head == null) return null;
-            ListNode newHead = new ListNode(-100);
+            ListNode newHead = new ListNode(-100,null);
             newHead.next = head;
             ListNode first = newHead;
             ListNode second = head;
@@ -2166,7 +2166,7 @@ namespace Yan
         /// <param name="head"></param>
         /// <param name="k"></param>
         /// <returns></returns>
-        public ListNode L_61_RotateRight(ListNode? head, int k)
+        public ListNode? L_61_RotateRight(ListNode? head, int k)
         {
             if (head == null || k == 0)
                 return head;
@@ -2766,7 +2766,7 @@ namespace Yan
         public ListNode L_82_DeleteDuplicates(ListNode head)
         {
             //双指针法
-            ListNode preHead = new ListNode(-1);
+            ListNode preHead = new ListNode(-1,null);
             preHead.next = head;
             ListNode pre = preHead;
             while (pre.next != null)
@@ -2787,7 +2787,7 @@ namespace Yan
         /// </summary>
         /// <param name="head"></param>
         /// <returns></returns>
-        public ListNode L_83_DeleteDuplicates(ListNode head)
+        public ListNode? L_83_DeleteDuplicates(ListNode head)
         {
             if (head == null)
             {
@@ -2894,7 +2894,7 @@ namespace Yan
         /// <param name="head"></param>
         /// <param name="x"></param>
         /// <returns></returns>
-        public ListNode L_86_Partition(ListNode? head, int x)
+        public ListNode? L_86_Partition(ListNode? head, int x)
         {
             ListNode? tempA = null;
             ListNode? tempB = null;
@@ -3117,7 +3117,7 @@ namespace Yan
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public ListNode L_92_ReverseBetween(ListNode head, int left, int right)
+        public ListNode? L_92_ReverseBetween(ListNode head, int left, int right)
         {
             int count = 1;
             if (head == null || head.next == null)
@@ -3125,24 +3125,24 @@ namespace Yan
                 return head;
             }
             //申请个虚拟头结点,这样能保证如果left等于1的时候和等于其他的时候操作时一样的
-            ListNode dummy = new ListNode(0);
+            ListNode dummy = new ListNode(0,null);
             dummy.next = head;
             //出来后cur指向第left-1个节点  count==left
-            ListNode cur = dummy;
+            ListNode? cur = dummy;
             while (count < left)
             {
                 cur = cur.next;
                 count++;
             }
-            ListNode left1 = cur; //这个是第left-1个节点
-            ListNode left2 = cur.next; //这个是第left个节点
+            ListNode? left1 = cur; //这个是第left-1个节点
+            ListNode? left2 = cur.next; //这个是第left个节点
             cur = cur.next;
-            ListNode temp = cur.next;
+            ListNode? temp = cur.next;
             //出来后count==right temp指向第right+1个元素,cur指向第right个元素
             while (count < right)
             {
                 //定义临时变量保存temp,以便给cur赋值,他就是下一步cur的位置
-                ListNode zhong = temp;
+                ListNode? zhong = temp;
                 //temp更新为下一个节点
                 temp = temp.next;
                 //让没更新的temp位置节点指向没更新的cur
@@ -3226,7 +3226,7 @@ namespace Yan
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public IList<int> L_94_InorderTraversal(TreeNode root)
+        public IList<int> L_94_InorderTraversal(TreeNode? root)
         {
             List<int> list = new List<int>();
             Stack<TreeNode> stack = new Stack<TreeNode>();
@@ -3259,6 +3259,8 @@ namespace Yan
             DFS(arr, 0, n, flag, ret);
             return ret;
         }
+        
+        
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -3378,12 +3380,12 @@ namespace Yan
             {
                 if (res is null)
                 {
-                    res = new ListNode(val);
+                    res = new ListNode(val,null);
                     last = res;
                 }
                 else
                 {
-                    last.next = new ListNode(val);
+                    last.next = new ListNode(val,null);
                     last = last.next;
                 }
             }
