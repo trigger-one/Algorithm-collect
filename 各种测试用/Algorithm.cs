@@ -15,6 +15,18 @@ namespace Yan
             this.next = next;
         }
     }
+    public class TreeNode
+    {
+        public int val;
+        public TreeNode left;
+        public TreeNode right;
+        public TreeNode(int val = 0, TreeNode left = null, TreeNode right = null)
+        {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
 
     public class Algorithm
     {
@@ -3061,6 +3073,192 @@ namespace Yan
             }
             return list;
         }
+        /// <summary>
+        /// leetcode第91题，解码方法
+        /// https://leetcode.cn/problems/decode-ways/solution/c-wan-zheng-zhu-shi-ban-by-vay0vagzkx-xol9/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public int L_91_NumDecodings(string s)
+        {
+            if (s[0] == '0') return 0;//很明显，如果首位为0，则无法解码
+
+            //dp[-1] = dp[0] = 1,解释dp[0]=1好理解，一个!0数字就只有1种解法；
+            /*
+             * dp[-1]=1直接看很难理解；但是可以推算，比如第2位为0，那么第1位只能为1或2才能解码，因为dp[i]=dp[i-2],
+             *此时，应该只有1种解法，即dp[1]=1,所以dp[1]=dp[-1]=1。或者可以理解为没有元素时只有一种解法，那就是没有解法。（玄学，个人理解）
+             */
+            int pre = 1, curr = 1;
+            for (int i = 1; i < s.Length; i++)
+            {
+                int tmp = curr;//记录当前解法数量
+                if (s[i] == '0')//如果当前为0，则前一个数字必须为1或2，否则无法解码（如00,30等），返回0
+                {
+                    //dp[i]=dp[i-2];解释第i-1位和第i位必须看做一个整体才能解码，故解码方法和第i-2位的解码方法相同
+                    if (s[i - 1] == '1' || s[i - 1] == '2')
+                        curr = pre;
+                    else return 0;
+                }
+                //如果前1位为1，则dp[i]=dp[i-1]+dp[i-2]; 解释：s[i-1]和s[i]分开译码为dp[i-1]；合在一起译码为dp[i-2]
+                //或者如果前1位为2，且当前位为1-6 ，则dp[i]=dp[i-1]+dp[i-2]; 解释同上
+                else if (s[i - 1] == '1' || (s[i - 1] == '2' && '1' <= s[i] && s[i] <= '6'))
+                {
+                    curr = curr + pre;
+                }
+                pre = tmp;
+            }
+            return curr;
+        }
+        /// <summary>
+        /// leetcode第92题，反转链表Ⅱ
+        /// https://leetcode.cn/problems/reverse-linked-list-ii/solution/shuang-bai-tong-guo-by-mo-chi-2e-25vj/
+        /// </summary>
+        /// <param name="head"></param>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        public ListNode L_92_ReverseBetween(ListNode head, int left, int right)
+        {
+            int count = 1;
+            if (head == null || head.next == null)
+            {
+                return head;
+            }
+            //申请个虚拟头结点,这样能保证如果left等于1的时候和等于其他的时候操作时一样的
+            ListNode dummy = new ListNode(0);
+            dummy.next = head;
+            //出来后cur指向第left-1个节点  count==left
+            ListNode cur = dummy;
+            while (count < left)
+            {
+                cur = cur.next;
+                count++;
+            }
+            ListNode left1 = cur; //这个是第left-1个节点
+            ListNode left2 = cur.next; //这个是第left个节点
+            cur = cur.next;
+            ListNode temp = cur.next;
+            //出来后count==right temp指向第right+1个元素,cur指向第right个元素
+            while (count < right)
+            {
+                //定义临时变量保存temp,以便给cur赋值,他就是下一步cur的位置
+                ListNode zhong = temp;
+                //temp更新为下一个节点
+                temp = temp.next;
+                //让没更新的temp位置节点指向没更新的cur
+                zhong.next = cur;
+                //cur更新为原来cur的下一位,即zhong,不能用cur=cur.next;因为后面的时候cur.next被改变了,第一次交换时候可以用,,因为你没更新left2的指向呢..
+                cur = zhong;
+                //count++;
+                count++;
+            }
+            //让反转后的链表和不需要反转的链表连接起来..
+            left1.next = cur;
+            left2.next = temp;
+            return dummy.next;
+        }
+        /// <summary>
+        /// leetcode第93题，复原IP地址
+        /// https://leetcode.cn/problems/restore-ip-addresses/solution/yi-ge-xia-wu-you-mei-liao-by-jian-chi-3/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public IList<string> L_93_RestoreIpAddresses(string s)
+        {
+            //从s.Length个数字里面选四个位置
+            List<string> res = new List<string>();
+            if (s.Length > 12) return res;
+
+            List<int> data = new List<int>();
+            StringBuilder builder = new StringBuilder();
+            Find(0, 4);
+            return res;
+
+            void AddData()
+            {
+                foreach (var p in data)
+                {
+                    builder.Append(p);
+                    builder.Append('.');
+                }
+                builder.Remove(builder.Length - 1, 1);
+                res.Add(builder.ToString());
+                builder.Clear();
+            }
+            void Find(int index, int count)
+            {
+                if (count == 0)
+                {
+                    if (index == s.Length)
+                    {
+                        AddData();
+                    }
+                    return;
+                }
+
+                if (index >= s.Length) { return; }
+                int val = 0;
+                if (s[index] == '0')
+                {
+                    data.Add(0);
+                    Find(index + 1, count - 1);
+                    data.RemoveAt(data.Count - 1);
+                }
+                else
+                {
+                    int lowVal = Math.Min(index + 3, s.Length);
+                    for (int i = index; i < lowVal; i++)
+                    {
+                        val = val * 10 + (s[i] - '0');
+                        if (val <= 255)
+                        {
+                            data.Add(val);
+                            Find(i + 1, count - 1);
+                            data.RemoveAt(data.Count - 1);
+                        }
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// leetcode第94题，二叉树的中序遍历
+        /// https://leetcode.cn/problems/binary-tree-inorder-traversal/solution/er-cha-shu-zhong-xu-bian-li-by-jin-li-er-qnac/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public IList<int> L_94_InorderTraversal(TreeNode root)
+        {
+            List<int> list = new List<int>();
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            while (root != null || stack.Count != 0)
+            {
+                while (root != null)
+                {
+                    stack.Push(root);
+                    root = root.left;
+                }
+                root = stack.Pop();
+                list.Add(root.val);
+                root = root.right;
+            }
+            return list;
+        }
+        /// <summary>
+        /// leetcode第95题，不同的二叉搜索树Ⅱ
+        /// https://leetcode.cn/problems/unique-binary-search-trees-ii/solution/tong-guo-shen-du-you-xian-sou-suo-sheng-cheng-bu-t/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public IList<TreeNode> L_95_GenerateTrees(int n)
+        {
+            IList<TreeNode> ret = new List<TreeNode>();
+            if (n == 0)
+                return ret;
+            int[] arr = new int[n];   //arr存储当前数字序列
+            bool[] flag = new bool[n + 1]; //存储当前数字是否有被使用
+            DFS(arr, 0, n, flag, ret);
+            return ret;
+        }
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -3331,6 +3529,79 @@ namespace Yan
             }
             vis[i, j] = false;
             return false;
+        }
+        /// <summary>
+        /// 于L_95_GenerateTrees中调用
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <param name="deep"></param>
+        /// <param name="n"></param>
+        /// <param name="flag"></param>
+        /// <param name="ret"></param>
+        public void DFS(int[] arr, int deep, int n, bool[] flag, IList<TreeNode> ret)
+        {
+            if (deep == n)
+            {
+                TreeNode node;
+                TreeNode Head = new TreeNode();
+                Head.val = arr[0];
+                int k;
+                for (int i = 0; i < n; ++i)
+                {
+                    k = 0;  //k=0初始状态 因为213和231相同，所以这里要做一个判断
+                    //一个数字后面的数字必须是比它小的都在比它大的的数字前面
+                    //或者是只允许一种类型的数字存在
+                    //k = 0时，当前数都比他小 
+                    //k = 1时，已经有数字比当前数字大了
+                    //这里需要数字序列的每一位都满足这个条件才不会产生重复
+                    for (int j = i + 1; j < n; ++j)
+                    {
+                        if (k == 0 && arr[j] < arr[i])
+                            k = 1;
+                        else if (k == 1 && arr[j] > arr[i])
+                            return;
+                    }
+                }
+                for (int i = 1; i < n; ++i)   //通过循环对当前数字序列建树
+                {
+                    node = Head;
+                    while (node != null)
+                    {
+                        if (node.val > arr[i])     //往左子树方向插入
+                        {
+                            if (node.left == null)
+                            {
+                                node.left = new TreeNode(arr[i]);
+                                break;
+                            }
+                            else
+                                node = node.left;
+                        }
+                        if (node.val < arr[i])    //往右子树方向插入
+                        {
+                            if (node.right == null)
+                            {
+                                node.right = new TreeNode(arr[i]);
+                                break;
+                            }
+                            else
+                                node = node.right;
+                        }
+                    }
+                }
+                ret.Add(Head);
+                return;
+            }
+            for (int i = 1; i <= n; ++i)
+            {
+                if (flag[i] == false)     //深搜，如果当前数字没被使用过就加进去
+                {
+                    flag[i] = true;
+                    arr[deep] = i;
+                    DFS(arr, deep + 1, n, flag, ret);  //深度加一
+                    flag[i] = false;
+                }
+            }
         }
         /// <summary>
         /// 落子，于L_50_SolveNQueens方法中调用
