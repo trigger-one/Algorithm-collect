@@ -3134,15 +3134,15 @@ namespace Yan
                 cur = cur.next;
                 count++;
             }
-            ListNode? left1 = cur; //这个是第left-1个节点
-            ListNode? left2 = cur.next; //这个是第left个节点
+            ListNode left1 = cur; //这个是第left-1个节点
+            ListNode left2 = cur.next; //这个是第left个节点
             cur = cur.next;
-            ListNode? temp = cur.next;
+            ListNode temp = cur.next;
             //出来后count==right temp指向第right+1个元素,cur指向第right个元素
             while (count < right)
             {
                 //定义临时变量保存temp,以便给cur赋值,他就是下一步cur的位置
-                ListNode? zhong = temp;
+                ListNode zhong = temp;
                 //temp更新为下一个节点
                 temp = temp.next;
                 //让没更新的temp位置节点指向没更新的cur
@@ -3316,7 +3316,7 @@ namespace Yan
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public bool L_98_IsValidBST(TreeNode root)
+        public bool L_98_IsValidBST(TreeNode? root)
         {
             var stack = new Stack<TreeNode>();
             var inorder = long.MinValue;
@@ -3343,11 +3343,11 @@ namespace Yan
         public void L_99_RecoverTree(TreeNode root)
         {
             Stack<TreeNode> stack = new Stack<TreeNode>();
-            TreeNode prev = null;
-            TreeNode swap1 = null;
-            TreeNode nextSwap1 = null;
-            TreeNode swap2 = null;
-            TreeNode node = root;
+            TreeNode? prev = null;
+            TreeNode? swap1 = null;
+            TreeNode? nextSwap1 = null;
+            TreeNode? swap2 = null;
+            TreeNode? node = root;
             while (stack.Count > 0 || node != null)
             {
                 while (node != null)
