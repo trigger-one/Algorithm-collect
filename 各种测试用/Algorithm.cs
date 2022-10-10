@@ -408,12 +408,12 @@ namespace Yan
         public ListNode? L_2_AddTwoNumbers(ListNode? l1, ListNode? l2)
         {
             int val = 0;
-            ListNode prenode = new ListNode(0,null);
+            ListNode prenode = new ListNode(0, null);
             ListNode lastnode = prenode;
             while (l1 != null || l2 != null || val != 0)
             {
                 val = val + (l1 == null ? 0 : l1.val) + (l2 == null ? 0 : l2.val);
-                lastnode.next = new ListNode(val % 10,null);
+                lastnode.next = new ListNode(val % 10, null);
                 lastnode = lastnode.next;
                 val = val / 10;
                 l1 = l1 == null ? null : l1.next;
@@ -862,11 +862,11 @@ namespace Yan
                 }
             }
             help.Sort();
-            ListNode res = new ListNode(0,null); int i = 0;
+            ListNode res = new ListNode(0, null); int i = 0;
             ListNode helpnode = res;
             while (i < help.Count())
             {
-                ListNode node = new ListNode(help[i],null); i++;
+                ListNode node = new ListNode(help[i], null); i++;
                 helpnode.next = node; helpnode = helpnode.next;
             }
             return res.next;
@@ -880,7 +880,7 @@ namespace Yan
         public ListNode? L_24_SwapPairs(ListNode head)
         {
             if (head == null) return null;
-            ListNode newHead = new ListNode(-100,null);
+            ListNode newHead = new ListNode(-100, null);
             newHead.next = head;
             ListNode first = newHead;
             ListNode second = head;
@@ -2766,7 +2766,7 @@ namespace Yan
         public ListNode L_82_DeleteDuplicates(ListNode head)
         {
             //双指针法
-            ListNode preHead = new ListNode(-1,null);
+            ListNode preHead = new ListNode(-1, null);
             preHead.next = head;
             ListNode pre = preHead;
             while (pre.next != null)
@@ -3125,7 +3125,7 @@ namespace Yan
                 return head;
             }
             //申请个虚拟头结点,这样能保证如果left等于1的时候和等于其他的时候操作时一样的
-            ListNode dummy = new ListNode(0,null);
+            ListNode dummy = new ListNode(0, null);
             dummy.next = head;
             //出来后cur指向第left-1个节点  count==left
             ListNode? cur = dummy;
@@ -3259,6 +3259,150 @@ namespace Yan
             DFS(arr, 0, n, flag, ret);
             return ret;
         }
+        /// <summary>
+        /// leetcode第96题，不同的二叉搜索树
+        /// https://leetcode.cn/problems/unique-binary-search-trees/solution/by-trophy-1-0u4f/
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public int L_96_NumTrees(int n)
+        {
+            var dp = new int[n + 1];
+            dp[0] = 1;
+            //将1至n分别作为根结点时的数量累加即为结果 dp[n]
+            for (int i = 1; i <= n; i++)
+            {
+                // 将除去根结点之外的（n-1）个子节点做排列组合
+                for (int j = 0; j < i; j++)
+                {
+                    dp[i] += dp[j] * dp[i - j - 1];
+                }
+            }
+            return dp[n];
+        }
+        /// <summary>
+        /// leetcode第97题，交错字符串
+        /// https://leetcode.cn/problems/interleaving-string/solution/jian-dan-ming-liao-de-jie-fa-by-magicalc-ubyl/
+        /// </summary>
+        /// <param name="s1"></param>
+        /// <param name="s2"></param>
+        /// <param name="s3"></param>
+        /// <returns></returns>
+        public bool L_97_IsInterleave(string s1, string s2, string s3)
+        {
+            int m = s1.Length, n = s2.Length;
+            if (s3.Length != n + m)
+                return false;
+            bool[,] dp = new bool[m + 1, n + 1];
+            //初始化 dp
+            dp[0, 0] = true;// 0 个元素必然可以构成 0 个元素
+            for (int i = 0; i < n; i++)
+                dp[0, i + 1] = dp[0, i] && s2[i] == s3[i];
+            for (int i = 0; i < m; i++)
+                dp[i + 1, 0] = dp[i, 0] && s1[i] == s3[i];
+            int cur;
+            for (int i = 0; i < m; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    cur = i + j + 1;
+                    dp[i + 1, j + 1] = (dp[i + 1, j] && s2[j] == s3[cur]) ||
+                                        (dp[i, j + 1] && s1[i] == s3[cur]);
+                }
+            return dp[m, n];
+        }
+        /// <summary>
+        /// leetcode第98题，验证二叉搜索树
+        /// https://leetcode.cn/problems/validate-binary-search-tree/solution/98-yan-zheng-er-cha-sou-suo-shu-c-by-kas-bybz/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public bool L_98_IsValidBST(TreeNode root)
+        {
+            var stack = new Stack<TreeNode>();
+            var inorder = long.MinValue;
+            while (stack.Count > 0 || root != null)
+            {
+                while (root != null)
+                {
+                    stack.Push(root);
+                    root = root.left;
+                }
+                root = stack.Pop();
+                if (root.val <= inorder)
+                    return false;
+                inorder = root.val;
+                root = root.right;
+            }
+            return true;
+        }
+        /// <summary>
+        /// leetcode第99题，恢复二叉搜索树
+        /// https://leetcode.cn/problems/recover-binary-search-tree/solution/by-davecano-2-4pqq/
+        /// </summary>
+        /// <param name="root"></param>
+        public void L_99_RecoverTree(TreeNode root)
+        {
+            Stack<TreeNode> stack = new Stack<TreeNode>();
+            TreeNode prev = null;
+            TreeNode swap1 = null;
+            TreeNode nextSwap1 = null;
+            TreeNode swap2 = null;
+            TreeNode node = root;
+            while (stack.Count > 0 || node != null)
+            {
+                while (node != null)
+                {
+                    stack.Push(node);
+                    node = node.left;
+                }
+                node = stack.Pop();
+                if (prev != null && prev.val > node.val)
+                {
+                    if (swap1 == null)
+                    {
+                        swap1 = prev;
+                        nextSwap1 = node;
+                    }
+                    else if (swap2 == null)
+                    {
+                        swap2 = node;
+                        break;
+                    }
+                }
+                prev = node;
+                node = node.right;
+            }
+            if (swap2 == null) Swap(ref swap1, ref nextSwap1);
+            else Swap(ref swap1, ref swap2);
+        }
+        /// <summary>
+        /// leetcode第100题，相同的树
+        /// https://leetcode.cn/problems/same-tree/solution/xiang-tong-de-shu-by-yicheng2020/
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="q"></param>
+        /// <returns></returns>
+        public bool L_100_IsSameTree(TreeNode? p, TreeNode? q)
+        {
+            //递归终止情况1：p, q都是null
+            if (p == null && q == null)
+            {
+                return true;
+            }
+            //递归终止情况2：p, q中有一个为空，或者是p, q的节点值不等
+            else if (p == null || q == null || p.val != q.val)
+            {
+                return false;
+            }
+            else
+            {
+                //递归看左子树是否相同
+                bool isLeftSameTree = L_100_IsSameTree(p.left, q.left);
+                //递归看右子树是否相同
+                bool isRightSameTree = L_100_IsSameTree(p.right, q.right);
+                return isLeftSameTree && isRightSameTree;
+            }
+        }
         
         
         //TODO待添加算法处
@@ -3380,12 +3524,12 @@ namespace Yan
             {
                 if (res is null)
                 {
-                    res = new ListNode(val,null);
+                    res = new ListNode(val, null);
                     last = res;
                 }
                 else
                 {
-                    last.next = new ListNode(val,null);
+                    last.next = new ListNode(val, null);
                     last = last.next;
                 }
             }
@@ -3551,11 +3695,11 @@ namespace Yan
                 for (int i = 0; i < n; ++i)
                 {
                     k = 0;  //k=0初始状态 因为213和231相同，所以这里要做一个判断
-                    //一个数字后面的数字必须是比它小的都在比它大的的数字前面
-                    //或者是只允许一种类型的数字存在
-                    //k = 0时，当前数都比他小 
-                    //k = 1时，已经有数字比当前数字大了
-                    //这里需要数字序列的每一位都满足这个条件才不会产生重复
+                            //一个数字后面的数字必须是比它小的都在比它大的的数字前面
+                            //或者是只允许一种类型的数字存在
+                            //k = 0时，当前数都比他小 
+                            //k = 1时，已经有数字比当前数字大了
+                            //这里需要数字序列的每一位都满足这个条件才不会产生重复
                     for (int j = i + 1; j < n; ++j)
                     {
                         if (k == 0 && arr[j] < arr[i])
