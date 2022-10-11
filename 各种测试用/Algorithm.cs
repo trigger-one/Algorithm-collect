@@ -3403,6 +3403,160 @@ namespace Yan
                 return isLeftSameTree && isRightSameTree;
             }
         }
+        /// <summary>
+        /// leetcode第101题，对称二叉树
+        /// https://leetcode.cn/problems/symmetric-tree/solution/dui-cheng-er-cha-shu-dui-lie-by-jin-li-e-twh1/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public bool? L_101_IsSymmetric(TreeNode root)
+        {
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            TreeNode? left = root.left;
+            TreeNode? right = root.right;
+            if (root == null || (left == null && right == null))
+            {
+                return true;
+            }
+            queue.Enqueue(left);
+            queue.Enqueue(right);
+            while (queue.Count() != 0)
+            {
+                left = queue.Dequeue();
+                right = queue.Dequeue();
+                if (left == null && right == null)
+                {
+                    continue;
+                }
+                if ((left == null || right == null) || (left.val != right.val))
+                {
+                    return false;
+                }
+                queue.Enqueue(left.left);
+                queue.Enqueue(right.right);
+                queue.Enqueue(left.right);
+                queue.Enqueue(right.left);
+            }
+            return true;
+        }
+        /// <summary>
+        /// leetcode第102题，二叉树的层序遍历
+        /// https://leetcode.cn/problems/binary-tree-level-order-traversal/solution/bfsmo-ban-dan-dui-lie-bei-jiu-wan-liao-by-mitty/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_102_LevelOrder(TreeNode root)
+        {
+            var result = new List<IList<int>>();
+            if (root == null) return result;
+            var queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+            while (queue.Count != 0)
+            {
+                var list = new List<int>();
+                int count = queue.Count;
+                for (int i = 0; i < count; ++i)
+                {
+                    var node = queue.Dequeue();
+                    list.Add(node.val);
+                    if (node.left != null) queue.Enqueue(node.left);
+                    if (node.right != null) queue.Enqueue(node.right);
+                }
+                result.Add(list);
+            }
+            return result;
+        }
+        /// <summary>
+        /// leetcode第103题，二叉树的锯齿形层序遍历
+        /// https://leetcode.cn/problems/binary-tree-zigzag-level-order-traversal/solution/by-pan-pan-sn-bdgx/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_103_ZigzagLevelOrder(TreeNode root)
+        {
+            IList<IList<int>> res = new List<IList<int>>();
+            if (root == null) return res;//没有元素直接返回空集合
+            List<int> subList;
+            bool reverse = false;//翻转，还是不翻转
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+            while (queue.Count != 0)
+            {
+                int count = queue.Count;//上一层级元素个数
+                subList = new List<int>();
+                while (count > 0)
+                {
+                    TreeNode pre = queue.Dequeue();
+                    subList.Add(pre.val);
+                    if (pre.left != null)
+                        queue.Enqueue(pre.left);
+                    if (pre.right != null)
+                        queue.Enqueue(pre.right);
+                    count--;//维护上一层级元素个数
+                }
+                if (reverse)//要么顺序翻转，要么不翻转
+                    subList.Reverse();
+                reverse = !reverse;//上次翻转了，下次不翻转
+                res.Add(subList);
+            }
+            return res;
+        }
+        /// <summary>
+        /// leetcode第104题，二叉树的最大深度
+        /// https://leetcode.cn/problems/maximum-depth-of-binary-tree/solution/er-cha-shu-de-zui-da-shen-du-by-yicheng2020/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public int L_104_MaxDepth(TreeNode root)
+        {
+            int result = 0;
+            //队列用来放每一层不为null的节点
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            //用来临时存放每次更新queue前的上一层所有节点
+            Queue<TreeNode> tempQueue = new Queue<TreeNode>();
+            if (root != null)
+            {
+                queue.Enqueue(root);
+            }
+            while (queue.Count > 0)
+            {
+                while (queue.Count > 0)
+                {
+                    tempQueue.Enqueue(queue.Dequeue());
+                }
+                result++;
+                while (tempQueue.Count > 0)
+                {
+                    //tempQueue不为空则将下一层的节点放入队列
+                    var element = tempQueue.Dequeue();
+                    if (element.left != null)
+                    {
+                        queue.Enqueue(element.left);
+                    }
+                    if (element.right != null)
+                    {
+                        queue.Enqueue(element.right);
+                    }
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// leetcode第105题，从前序与中序遍历序列构造二叉树
+        /// https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solution/can-kao-guan-fang-jie-da-by-xiao-yao-23/
+        /// </summary>
+        /// <param name="preorder"></param>
+        /// <param name="inorder"></param>
+        /// <returns></returns>
+        public TreeNode L_105_BuildTree(int[] preorder, int[] inorder)
+        {
+            Dictionary<int, int> h = new Dictionary<int, int>();
+            for (int i = 0; i < inorder.Length; i++)
+            {
+                h.Add(inorder[i], i);
+            }
+            return BuildTree(preorder, 0, preorder.Length - 1, 0, inorder.Length - 1, h);
+        }
         
         
         //TODO待添加算法处
@@ -3546,6 +3700,28 @@ namespace Yan
         }
 
 
+        /// <summary>
+        /// 于L_105_BuildTree中调用
+        /// </summary>
+        /// <param name="preorder"></param>
+        /// <param name="htInorder"></param>
+        /// <param name="preStart"></param>
+        /// <param name="inStart"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        private TreeNode BuildTree(int[] preorder, int preleft, int preright, int inleft, int inright, Dictionary<int, int> h)
+        {
+            if (preleft > preright || inleft > inright)
+            {
+                return null;
+            }
+            int rootval = preorder[preleft];
+            int pindex = h[rootval];
+            TreeNode root = new TreeNode(rootval);
+            root.left = BuildTree(preorder, preleft + 1, pindex + preleft - inleft, inleft, pindex - 1, h);
+            root.right = BuildTree(preorder, pindex + preleft - inleft + 1, preright, pindex + 1, inright, h);
+            return root;
+        }
         /// <summary>
         /// 于L_77_Combine中调用
         /// </summary>
