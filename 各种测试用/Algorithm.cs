@@ -3557,6 +3557,135 @@ namespace Yan
             }
             return BuildTree(preorder, 0, preorder.Length - 1, 0, inorder.Length - 1, h);
         }
+        /// <summary>
+        /// leetcode第106题，从中序与后续遍历序列构造二叉树
+        /// https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/solution/cong-zhong-xu-yu-hou-xu-bian-li-lie-biao-3ev9/
+        /// </summary>
+        /// <param name="inorder"></param>
+        /// <param name="postorder"></param>
+        /// <returns></returns>
+        public TreeNode? L_106_BuildTree(int[] inorder, int[] postorder)
+        {
+            if (inorder.Length == 0) return null;
+            int root = postorder[postorder.Length - 1];
+
+            var rootIndexInInorderArray = 0;
+            for (int i = 0; i < inorder.Length; i++)
+            {
+                if (inorder[i] == root) rootIndexInInorderArray = i;
+            }
+            var rootNode = new TreeNode(root);
+            int[] inorderLeft = new int[0], inorderRight = new int[0];
+            int[] postorderLeft = new int[0], postorderRight = new int[0];
+
+            if (rootIndexInInorderArray != 0)
+            {
+                inorderLeft = inorder[0..rootIndexInInorderArray];
+                postorderLeft = postorder[0..rootIndexInInorderArray];
+            }
+            if (rootIndexInInorderArray != inorder.Length - 1)
+            {
+                inorderRight = inorder[(rootIndexInInorderArray + 1)..inorder.Length];
+                postorderRight = postorder[rootIndexInInorderArray..(postorder.Length - 1)];
+            }
+            rootNode.left = L_106_BuildTree(inorderLeft, postorderLeft);
+            rootNode.right = L_106_BuildTree(inorderRight, postorderRight);
+            return rootNode;
+        }
+        /// <summary>
+        /// leetcode第107题，二叉树的层序遍历Ⅱ
+        /// https://leetcode.cn/problems/binary-tree-level-order-traversal-ii/solution/er-cha-shu-de-ceng-ci-bian-li-ii-by-yicheng2020/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_107_LevelOrderBottom(TreeNode root)
+        {
+            IList<IList<int>> result = new List<IList<int>>();
+            //队列用来放每一层不为null的节点
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            //用来临时存放每次更新queue前的上一层所有节点
+            Queue<TreeNode> tempQueue = new Queue<TreeNode>();
+
+            if (root != null)
+            {
+                queue.Enqueue(root);
+            }
+            while (queue.Count > 0)
+            {
+                var list = new List<int>();
+                while (queue.Count > 0)
+                {
+                    var element = queue.Dequeue();
+                    //逐个添加该层节点
+                    list.Add(element.val);
+                    tempQueue.Enqueue(element);
+                }
+                result.Add(list);
+                while (tempQueue.Count > 0)
+                {
+                    //放入下一层不为空的节点
+                    var element = tempQueue.Dequeue();
+                    if (element.left != null)
+                    {
+                        queue.Enqueue(element.left);
+                    }
+                    if (element.right != null)
+                    {
+                        queue.Enqueue(element.right);
+                    }
+                }
+            }
+            return result.Reverse().ToList();
+        }
+        /// <summary>
+        /// leetcode第108题，将有序数组转换为二叉搜索树
+        /// https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/solution/jiang-you-xu-shu-zu-zhuan-huan-wei-er-cha-sou-s-33/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public TreeNode? L_108_SortedArrayToBST(int[] nums)
+        {
+            return Helper(nums, 0, nums.Length - 1);
+        }
+        /// <summary>
+        /// leetcode第109题，有序链表转换二叉搜索树
+        /// https://leetcode.cn/problems/convert-sorted-list-to-binary-search-tree/solution/109-you-xu-lian-biao-zhuan-huan-er-cha-sou-suo--17/
+        /// </summary>
+        /// <param name="head"></param>
+        /// <returns></returns>
+        public TreeNode? L_109_SortedListToBST(ListNode? head)
+        {
+            // 快慢指针：先找到中间节点，然后左右两边的链表作为左右子树，直到链表只有一个节点。
+            if (head == null || head.next == null)
+            {
+                return null;
+            }
+            ListNode fast = head, slow = head, pre = null;
+            while (fast != null && fast.next != null)
+            {
+                fast = fast.next.next;
+                pre = slow;
+                slow = slow.next;
+            }
+            TreeNode root = new TreeNode(slow.val);
+            pre.next = null;    // 把链表一分为二
+            root.left = L_109_SortedListToBST(head);
+            root.right = L_109_SortedListToBST(slow.next);
+            return root;
+        }
+        /// <summary>
+        /// leetcode第110题，平衡二叉树
+        /// 
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public bool L_110_IsBalanced(TreeNode root)
+        {
+            if (root == null)
+                return true;
+            else
+                return Math.Abs(Height(root.left) - Height(root.right)) <= 1 && L_110_IsBalanced(root.left) && L_110_IsBalanced(root.right);
+        }
         
         
         //TODO待添加算法处
@@ -3698,8 +3827,38 @@ namespace Yan
             }
             Console.WriteLine("");
         }
-
-
+        /// <summary>
+        /// 于L_110_IsBalanced中调用
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        private static int Height(TreeNode root)
+        {
+            if (root == null)
+                return 0;
+            else
+                return Math.Max(Height(root.left), Height(root.right)) + 1;
+        }
+        /// <summary>
+        /// 于L_108_SortedArrayToBST中调用
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        private TreeNode? Helper(int[] nums, int left, int right)
+        {
+            if (left > right)
+            {
+                return null;
+            }
+            // 总是选择中间位置左边的数字作为根节点
+            int mid = (left + right) / 2;
+            TreeNode root = new TreeNode(nums[mid]);
+            root.left = Helper(nums, left, mid - 1);
+            root.right = Helper(nums, mid + 1, right);
+            return root;
+        }
         /// <summary>
         /// 于L_105_BuildTree中调用
         /// </summary>
