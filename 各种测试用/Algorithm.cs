@@ -3686,6 +3686,148 @@ namespace Yan
             else
                 return Math.Abs(Height(root.left) - Height(root.right)) <= 1 && L_110_IsBalanced(root.left) && L_110_IsBalanced(root.right);
         }
+        /// <summary>
+        /// leetcode第111题，二叉树最小深度
+        /// https://leetcode.cn/problems/minimum-depth-of-binary-tree/solution/can-kao-jing-xuan-ti-jie-xie-de-cdai-ma-zhe-ti-dfs/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public int L_111_MinDepth(TreeNode root)
+        {
+            if (root == null)
+            {
+                return 0;
+            }
+            if (root.left == null && root.right == null)
+            {
+                return 1;
+            }
+            int left = L_111_MinDepth(root.left);
+            int right = L_111_MinDepth(root.right);
+            if (root.left == null || root.right == null)
+            {
+                return left + right + 1;
+            }
+            return Math.Min(left, right) + 1;
+        }
+        /// <summary>
+        /// leetcode第112题，路径总和
+        /// https://leetcode.cn/problems/path-sum/solution/112-lu-jing-zong-he-by-stormsunshine-s3yd/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="targetSum"></param>
+        /// <returns></returns>
+        public bool L_112_HasPathSum(TreeNode? root, int targetSum)
+        {
+            if (root == null)
+            {
+                return false;
+            }
+            if (root.left == null && root.right == null)
+            {
+                return targetSum == root.val;
+            }
+            return L_112_HasPathSum(root.left, targetSum - root.val) || L_112_HasPathSum(root.right, targetSum - root.val);
+        }
+        /// <summary>
+        /// leetcode第113题，路径总和Ⅱ
+        /// https://leetcode.cn/problems/path-sum-ii/solution/bfssi-lu-xiao-lu-wei-bi-zui-gao-dan-shi-si-lu-ying/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="targetSum"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_113_PathSum(TreeNode root, int targetSum)
+        {
+            if (root == null)
+                return new List<IList<int>>(0);
+
+            var result = new List<IList<int>>();
+            var bfs = new Queue<TreeNode[]>();
+            bfs.Enqueue(new TreeNode[1]
+            {
+                root
+            });
+
+            while (bfs.Count > 0)
+            {
+                var current = bfs.Dequeue();
+                var currLast = current.Last();
+                var _sum = current.Select(x => x.val).Sum();
+                if (targetSum == _sum && currLast.left == null && currLast.right == null)
+                {
+                    result.Add(current.Select(x => x.val).ToList());
+                }
+                else
+                {
+                    if (currLast.left != null)
+                    {
+                        var _nexts = new TreeNode[current.Length + 1];
+                        for (var i = 0; i < current.Length; i++)
+                        {
+                            _nexts[i] = current[i];
+                        }
+                        _nexts[_nexts.Length - 1] = currLast.left;
+                        bfs.Enqueue(_nexts);
+                    }
+                    if (currLast.right != null)
+                    {
+                        var _nexts = new TreeNode[current.Length + 1];
+                        for (var i = 0; i < current.Length; i++)
+                        {
+                            _nexts[i] = current[i];
+                        }
+                        _nexts[_nexts.Length - 1] = currLast.right;
+                        bfs.Enqueue(_nexts);
+                    }
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// leetcode第114题，二叉树展开为链表
+        /// https://leetcode.cn/problems/flatten-binary-tree-to-linked-list/solution/by-dhsgd-32y0/
+        /// </summary>
+        /// <param name="root"></param>
+        public void L_114_Flatten(TreeNode? root)
+        {
+            if (root == null) return;
+            //函数定义为把root 为根的二叉树拉成链表
+            L_114_Flatten(root.left);
+            L_114_Flatten(root.right);
+            TreeNode? left = root.left;
+            TreeNode? right = root.right;
+            root.left = null;
+            root.right = left;
+            TreeNode p = root;
+            while (p.right != null)
+            {
+                p = p.right;
+            }
+            p.right = right;
+        }
+        /// <summary>
+        /// leetcode第115题，不同的子序列
+        /// https://leetcode.cn/problems/distinct-subsequences/solution/c-dp-by-99de-shou-su-jia-shang-1de-yun-q-4947/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public int L_115_NumDistinct(string s, string t)
+        {
+            int[,] dp = new int[s.Length + 1, t.Length + 1];
+            for (int i = 0; i <= s.Length; i++)
+                dp[i, 0] = 1;
+            for (int i = 1; i < s.Length + 1; i++)
+            {
+                for (int j = 1; j < t.Length + 1; j++)
+                {
+                    if (s[i - 1] == t[j - 1])
+                        dp[i, j] = dp[i - 1, j - 1] + dp[i - 1, j];
+                    else dp[i, j] = dp[i - 1, j];
+                }
+            }
+            return dp[s.Length, t.Length];
+        }
         
         
         //TODO待添加算法处
