@@ -27,7 +27,28 @@ namespace Yan
             this.right = right;
         }
     }
+    public class Node
+    {
+        public int val;
+        public Node left;
+        public Node right;
+        public Node next;
 
+        public Node() { }
+
+        public Node(int _val)
+        {
+            val = _val;
+        }
+
+        public Node(int _val, Node _left, Node _right, Node _next)
+        {
+            val = _val;
+            left = _left;
+            right = _right;
+            next = _next;
+        }
+    }
     public class Algorithm
     {
         //NOTE 关键字文本：TODO HACK NOTE INFO TAG XXX BUG FIXME
@@ -3827,6 +3848,156 @@ namespace Yan
                 }
             }
             return dp[s.Length, t.Length];
+        }
+        /// <summary>
+        /// leetcode第116题，填充每个节点的下一个右侧节点指针
+        /// https://leetcode.cn/problems/populating-next-right-pointers-in-each-node/solution/by-stormsunshine-6wrw/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public Node L_116_Connect(Node root)
+        {
+            if (root == null)
+            {
+                return root;
+            }
+            Queue<Node> queue = new Queue<Node>();
+            queue.Enqueue(root);
+            while (queue.Count > 0)
+            {
+                int size = queue.Count;
+                for (int i = 0; i < size; i++)
+                {
+                    Node node = queue.Dequeue();
+                    if (i < size - 1)
+                    {
+                        node.next = queue.Peek();
+                    }
+                    if (node.left != null)
+                    {
+                        queue.Enqueue(node.left);
+                    }
+                    if (node.right != null)
+                    {
+                        queue.Enqueue(node.right);
+                    }
+                }
+            }
+            return root;
+        }
+        /// <summary>
+        /// leetcode第117题，填充每个节点的下一个右侧节点指针Ⅱ
+        /// https://leetcode.cn/problems/populating-next-right-pointers-in-each-node-ii/solution/117-tian-chong-mei-ge-jie-dian-de-xia-yi-b0n0/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public Node L_117_Connect(Node root)
+        {
+            if (root == null)
+            {
+                return root;
+            }
+            Queue<Node> queue = new Queue<Node>();
+            queue.Enqueue(root);
+            while (queue.Count > 0)
+            {
+                int size = queue.Count;
+                for (int i = 0; i < size; i++)
+                {
+                    Node node = queue.Dequeue();
+                    if (i < size - 1)
+                    {
+                        node.next = queue.Peek();
+                    }
+                    if (node.left != null)
+                    {
+                        queue.Enqueue(node.left);
+                    }
+                    if (node.right != null)
+                    {
+                        queue.Enqueue(node.right);
+                    }
+                }
+            }
+            return root;
+        }
+        /// <summary>
+        /// leetcode第118题，杨辉三角
+        /// https://leetcode.cn/problems/pascals-triangle/solution/118-yang-hui-san-jiao-by-myg-u-850j/
+        /// </summary>
+        /// <param name="numRows"></param>
+        /// <returns></returns>
+        public IList<IList<int>> L_118_Generate(int numRows)
+        {
+            var result = new int[numRows][];
+            for (int i = 0; i < numRows; i++)
+            {
+                result[i] = new int[i + 1];
+                //最前和最后都是1
+                result[i][0] = 1;
+                result[i][i] = 1;
+                //[1] 0
+                //[1,1] 1
+                //[1,2,1] 2
+                //[1,3,3,1] 3
+                //[1,4,6,4,1] 4
+                for (int j = 1; j < i; j++)
+                {
+                    //其他等于上一行[i-1] 和 [i] 的和
+                    result[i][j] = result[i - 1][j - 1] + result[i - 1][j];
+                }
+            }
+            return result.ToArray();
+        }
+        /// <summary>
+        /// leetcode第118题，杨辉三角Ⅱ
+        /// https://leetcode.cn/problems/pascals-triangle-ii/solution/22824-by-noslotus-0ubm/
+        /// </summary>
+        /// <param name="rowIndex"></param>
+        /// <returns></returns>
+        public IList<int> L_119_GetRow(int rowIndex)
+        {
+            List<int> t = new List<int>() { 1 };
+            if (rowIndex == 0) return t;
+            for (int i = 0; i < rowIndex; i++)
+            {
+                t.Add(1);
+                for (int j = i; j > 0; j--)
+                {
+                    t[j] += t[j - 1];
+                }
+            }
+            return t;
+        }
+        /// <summary>
+        /// leetcode第120题，三角形最小路径和
+        /// https://leetcode.cn/problems/triangle/solution/guan-fang-ti-jie-java-c-by-zhaohyan22-k9ks/
+        /// </summary>
+        /// <param name="triangle"></param>
+        /// <returns></returns>
+        public int L_120_MinimumTotal(IList<IList<int>> triangle)
+        {
+            if (triangle.Count == 1) return triangle[0][0];
+            int n = triangle.Count;
+            int[,] dp = new int[n, n];
+            dp[0, 0] = triangle[0][0];
+            for (int i = 1; i < n; ++i)
+            {
+                dp[i, 0] = dp[i - 1, 0] + triangle[i][0];
+                // 当 j=i 时，f[i-1][j] 没有意义，因此j < i
+                for (int j = 1; j < i; ++j)
+                {
+                    dp[i, j] = Math.Min(dp[i - 1, j - 1], dp[i - 1, j]) + triangle[i][j];
+                }
+                dp[i, i] = dp[i - 1, i - 1] + triangle[i][i];
+            }
+            // Finding the minimum
+            int ans = dp[n - 1, 0];
+            for (int k = 1; k < n; ++k)
+            {
+                ans = Math.Min(ans, dp[n - 1, k]);
+            }
+            return ans;
         }
         
         
