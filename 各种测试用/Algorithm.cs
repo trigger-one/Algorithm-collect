@@ -3434,8 +3434,8 @@ namespace Yan
         public bool? L_101_IsSymmetric(TreeNode root)
         {
             Queue<TreeNode> queue = new Queue<TreeNode>();
-            TreeNode? left = root.left;
-            TreeNode? right = root.right;
+            TreeNode left = root.left;
+            TreeNode right = root.right;
             if (root == null || (left == null && right == null))
             {
                 return true;
