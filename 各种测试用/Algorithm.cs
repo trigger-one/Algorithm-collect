@@ -53,6 +53,7 @@ namespace Yan
     {
         //NOTE 关键字文本：TODO HACK NOTE INFO TAG XXX BUG FIXME
         private int len; //全局变量
+        int maxSum = int.MinValue;//最小整数
         /// <summary>
         /// 于L_37_SolveSudoku中调用
         /// </summary>
@@ -3999,6 +4000,120 @@ namespace Yan
             }
             return ans;
         }
+        /// <summary>
+        /// leetcode第121题，买卖股票的最佳时机
+        /// https://leetcode.cn/problems/best-time-to-buy-and-sell-stock/solution/by-hua-gao-xgwx/
+        /// </summary>
+        /// <param name="prices"></param>
+        /// <returns></returns>
+        public int L_121_MaxProfit(int[] prices)
+        {
+            int minprice = prices[0];
+            int maxProfit = 0;
+            foreach (int price in prices)
+            {
+                if (price < minprice)
+                {
+                    minprice = price;
+                }
+                else if (price - minprice > maxProfit)
+                {
+                    maxProfit = price - minprice;
+                }
+            }
+            return maxProfit;
+        }
+        /// <summary>
+        /// leetcode第122题，买卖股票的最佳时机Ⅱ
+        /// https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-ii/solution/mai-mai-gu-piao-de-zui-jia-shi-ji-ii-c-by-transong/
+        /// </summary>
+        /// <param name="prices"></param>
+        /// <returns></returns>
+        public int L_122_MaxProfit(int[] prices)
+        {
+            var profit = 0;
+            for (var i = 1; i < prices.Length; i++)
+            {
+                if (prices[i] > prices[i - 1])
+                {
+                    profit += prices[i] - prices[i - 1];
+                }
+            }
+            return profit;
+        }
+        /// <summary>
+        /// leetcode第123题，买卖股票的最佳时机Ⅲ
+        /// https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/solution/c-by-anlll-4ybj/
+        /// </summary>
+        /// <param name="prices"></param>
+        /// <returns></returns>
+        public int L_123_MaxProfit(int[] prices)
+        {
+            int n = prices.Length;
+            int[,,] dp = new int[n, 2, 3];
+            dp[0, 0, 0] = 0;
+            dp[0, 1, 0] = -prices[0];
+            int ans = 0;
+            for (int i = 1; i < n; i++)
+            {
+                for (int j = 0; j <= 2; j++)
+                {
+                    if (i < j) continue;
+                    if (j == 0)
+                        dp[i, 0, j] = dp[i - 1, 0, j];
+                    else
+                        dp[i, 0, j] = Math.Max(dp[i - 1, 0, j], dp[i - 1, 1, j - 1] + prices[i]);
+                    if (i == j)
+                        dp[i, 1, j] = -prices[i];
+                    else
+                        dp[i, 1, j] = Math.Max(dp[i - 1, 1, j], dp[i - 1, 0, j] - prices[i]);
+                }
+            }
+            for (int j = 0; j <= 2; j++)
+            {
+                ans = Math.Max(ans, dp[n - 1, 0, j]);
+            }
+            return ans;
+        }
+        /// <summary>
+        /// leetcode第124题，二叉树中的最大路径和
+        /// https://leetcode.cn/problems/binary-tree-maximum-path-sum/solution/er-cha-shu-zhong-de-zui-da-lu-jing-he-by-leetcode-/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public int L_124_MaxPathSum(TreeNode root)
+        {
+            MaxGain(root);
+            return maxSum;
+        }
+        /// <summary>
+        /// leetcode第125题，验证回文串
+        /// https://leetcode.cn/problems/valid-palindrome/solution/by-stormsunshine-2y6d/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public bool L_125_IsPalindrome(string s)
+        {
+            int left = 0, right = s.Length - 1;
+            while (left < right)
+            {
+                while (left < right && !char.IsLetterOrDigit(s[left]))
+                {
+                    left++;
+                }
+                while (left < right && !char.IsLetterOrDigit(s[right]))
+                {
+                    right--;
+                }
+                if (char.ToLower(s[left]) != char.ToLower(s[right]))
+                {
+                    return false;
+                }
+                left++;
+                right--;
+            }
+            return true;
+        }
         
         
         //TODO待添加算法处
@@ -4139,6 +4254,34 @@ namespace Yan
                 l = l.next;
             }
             Console.WriteLine("");
+        }
+
+
+        /// <summary>
+        /// 于L_124_MaxPathSum中调用
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private int MaxGain(TreeNode node)
+        {
+            if (node == null)
+            {
+                return 0;
+            }
+
+            // 递归计算左右子节点的最大贡献值
+            // 只有在最大贡献值大于 0 时，才会选取对应子节点
+            int leftGain = Math.Max(MaxGain(node.left), 0);
+            int rightGain = Math.Max(MaxGain(node.right), 0);
+
+            // 节点的最大路径和取决于该节点的值与该节点的左右子节点的最大贡献值
+            int priceNewpath = node.val + leftGain + rightGain;
+
+            // 更新答案
+            maxSum = Math.Max(maxSum, priceNewpath);
+
+            // 返回节点的最大贡献值
+            return node.val + Math.Max(leftGain, rightGain);
         }
         /// <summary>
         /// 于L_110_IsBalanced中调用
