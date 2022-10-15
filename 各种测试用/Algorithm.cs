@@ -30,9 +30,9 @@ namespace Yan
     public class Node
     {
         public int val;
-        public Node left;
-        public Node right;
-        public Node next;
+        public Node? left;
+        public Node? right;
+        public Node? next;
 
         public Node() { }
 
@@ -69,7 +69,7 @@ namespace Yan
         /// <summary>
         /// 于L_37_SolveSudoku中调用
         /// </summary>
-        char[][] boardAllres = null;
+        char[][]? boardAllres = null;
         /// <summary>
         /// 于L_79_Exist中调用
         /// </summary>
@@ -1348,7 +1348,7 @@ namespace Yan
         /// https://leetcode.cn/problems/sudoku-solver/solution/jie-shu-du-by-inhero/
         /// </summary>
         /// <param name="board"></param>
-        public void L_37_SolveSudoku(char[][] board)
+        public void L_37_SolveSudoku(char[][]? board)
         {
             //判断一共有多少个数字
             int hasNumCount = 0;
@@ -1368,23 +1368,26 @@ namespace Yan
                 liBox.Add(new Dictionary<int, bool>(dicAllTemp));
             }
             //遍历整个集合 将已出现的数字赋值为true 
-            for (int i = 0; i < board.Length; i++)
+            if (board != null)
             {
-                for (int j = 0; j < board[0].Length; j++)
+                for (int i = 0; i < board.Length; i++)
                 {
-                    if (board[i][j] != '.')
+                    for (int j = 0; j < board[0].Length; j++)
                     {
-                        int temp = board[i][j] - 48;
-                        liRow[i][temp] = true;
-                        liCol[j][temp] = true;
-                        int count = (i / 3) * 3 + j / 3;
-                        liBox[count][temp] = true;
-                        hasNumCount++;
+                        if (board[i][j] != '.')
+                        {
+                            int temp = board[i][j] - 48;
+                            liRow[i][temp] = true;
+                            liCol[j][temp] = true;
+                            int count = (i / 3) * 3 + j / 3;
+                            liBox[count][temp] = true;
+                            hasNumCount++;
+                        }
                     }
                 }
+                Recursive(board, hasNumCount, 0, 0);
+                board = boardAllres;
             }
-            Recursive(board, hasNumCount, 0, 0);
-            board = boardAllres;
         }
         /// <summary>
         /// leetcode第38题，外观数列
@@ -1827,20 +1830,22 @@ namespace Yan
             var result = new List<IList<string>>();
             TryDown(cb, 0);
             return result;
-
-            void TryDown(int[][] tcb, int y)
+            void TryDown(int[]?[] tcb, int y)
             {
                 //递归终止
                 if (y >= n) //把二维数组转换为字符数组
-                    result.Add(tcb.Select(a => new string(a.Select(
+                    result.Add(tcb.Select(a => new string(a?.Select(
                         b => b == 0 ? 'Q' : '.').ToArray())).ToList());
                 else
                     for (int i = 0; i < n; i++)
-                        if (tcb[y][i] == 0)
+                        if (tcb != null)
                         {
-                            int[][] ccb = tcb.Select(a => a.Clone() as int[]).ToArray();
-                            Down(ccb, y, i);//落子
-                            TryDown(ccb, y + 1);//逐行遍历可落子点
+                            if (tcb[y]?[i] == 0)
+                            {
+                                int[]?[] ccb = tcb.Select(a => a?.Clone() as int[]).ToArray();
+                                Down(ccb, y, i);//落子
+                                TryDown(ccb, y + 1);//逐行遍历可落子点
+                            }
                         }
             }
         }
@@ -2208,10 +2213,16 @@ namespace Yan
             while (count - k > 0)
             {
                 pre = head;
-                head = head.next;
+                if (head != null)
+                {
+                    head = head.next;
+                }
                 count--;
             }
-            pre.next = null;
+            if (pre != null)
+            {
+                pre.next = null;
+            }
             return head;
         }
         /// <summary>
@@ -2793,10 +2804,11 @@ namespace Yan
             ListNode pre = preHead;
             while (pre.next != null)
             {
-                ListNode curr = pre.next;
+                ListNode? curr = pre.next;
                 while (curr != null && pre.next.val == curr.val)
+                {
                     curr = curr.next;
-
+                }
                 //不删除的情况，curr处的节点无重复，即该段节点只有一个
                 if (pre.next.next == curr) pre = pre.next;
                 else pre.next = curr;
@@ -2817,11 +2829,11 @@ namespace Yan
             }
             var rememberTop = head;
             var next = head.next;
-            while (head != null && next != null)
+            while (head != null && head.next != null)
             {
-                if (next.val == head.val)
+                if (head.next.val == head.val)
                 {
-                    next = next.next;
+                    next = head.next.next;
                     head.next = next;
                 }
                 else
@@ -3150,33 +3162,48 @@ namespace Yan
             ListNode dummy = new ListNode(0, null);
             dummy.next = head;
             //出来后cur指向第left-1个节点  count==left
-            ListNode? cur = dummy;
+            ListNode? cur = dummy, left1, left2, temp;
             while (count < left)
             {
-                cur = cur.next;
-                count++;
+                if (cur != null)
+                {
+                    cur = cur.next;
+                    count++;
+                }
             }
-            ListNode left1 = cur; //这个是第left-1个节点
-            ListNode left2 = cur.next; //这个是第left个节点
-            cur = cur.next;
-            ListNode temp = cur.next;
-            //出来后count==right temp指向第right+1个元素,cur指向第right个元素
-            while (count < right)
+            if (cur != null && cur.next != null)
             {
-                //定义临时变量保存temp,以便给cur赋值,他就是下一步cur的位置
-                ListNode zhong = temp;
-                //temp更新为下一个节点
-                temp = temp.next;
-                //让没更新的temp位置节点指向没更新的cur
-                zhong.next = cur;
-                //cur更新为原来cur的下一位,即zhong,不能用cur=cur.next;因为后面的时候cur.next被改变了,第一次交换时候可以用,,因为你没更新left2的指向呢..
-                cur = zhong;
-                //count++;
-                count++;
+                left1 = cur; //这个是第left-1个节点
+                left2 = cur.next; //这个是第left个节点
+                cur = cur.next;
+                temp = cur.next;
+                //出来后count==right temp指向第right+1个元素,cur指向第right个元素
+                while (count < right)
+                {
+                    //定义临时变量保存temp,以便给cur赋值,他就是下一步cur的位置
+                    ListNode? zhong = temp;
+                    //temp更新为下一个节点
+                    if (temp != null)
+                    {
+                        temp = temp.next;
+                    }
+                    //让没更新的temp位置节点指向没更新的cur
+                    if (zhong != null)
+                    {
+                        zhong.next = cur;
+                    }
+                    //cur更新为原来cur的下一位,即zhong,不能用cur=cur.next;因为后面的时候cur.next被改变了,第一次交换时候可以用,,因为你没更新left2的指向呢..
+                    cur = zhong;
+                    //count++;
+                    count++;
+                }
+                //让反转后的链表和不需要反转的链表连接起来..
+                if (left1 != null && left2 != null)
+                {
+                    left1.next = cur;
+                    left2.next = temp;
+                }
             }
-            //让反转后的链表和不需要反转的链表连接起来..
-            left1.next = cur;
-            left2.next = temp;
             return dummy.next;
         }
         /// <summary>
@@ -3434,14 +3461,15 @@ namespace Yan
         public bool? L_101_IsSymmetric(TreeNode root)
         {
             Queue<TreeNode> queue = new Queue<TreeNode>();
-            TreeNode left = root.left;
-            TreeNode right = root.right;
-            if (root == null || (left == null && right == null))
+            TreeNode? left, right;
+            left = root.left;
+            right = root.right;
+            if (root == null || (left == null && right == null)) return true;
+            if (left != null && right != null)
             {
-                return true;
+                queue.Enqueue(left);
+                queue.Enqueue(right);
             }
-            queue.Enqueue(left);
-            queue.Enqueue(right);
             while (queue.Count() != 0)
             {
                 left = queue.Dequeue();
@@ -3454,10 +3482,13 @@ namespace Yan
                 {
                     return false;
                 }
-                queue.Enqueue(left.left);
-                queue.Enqueue(right.right);
-                queue.Enqueue(left.right);
-                queue.Enqueue(right.left);
+                if (left.left != null && right.right != null && left.right != null && right.left != null)
+                {
+                    queue.Enqueue(left.left);
+                    queue.Enqueue(right.right);
+                    queue.Enqueue(left.right);
+                    queue.Enqueue(right.left);
+                }
             }
             return true;
         }
@@ -3570,7 +3601,7 @@ namespace Yan
         /// <param name="preorder"></param>
         /// <param name="inorder"></param>
         /// <returns></returns>
-        public TreeNode L_105_BuildTree(int[] preorder, int[] inorder)
+        public TreeNode? L_105_BuildTree(int[] preorder, int[] inorder)
         {
             Dictionary<int, int> h = new Dictionary<int, int>();
             for (int i = 0; i < inorder.Length; i++)
@@ -3682,26 +3713,30 @@ namespace Yan
             {
                 return null;
             }
-            ListNode fast = head, slow = head, pre = null;
+            ListNode? fast = head, slow = head, pre = null;
             while (fast != null && fast.next != null)
             {
                 fast = fast.next.next;
                 pre = slow;
-                slow = slow.next;
+                if (slow != null) slow = slow.next;
             }
-            TreeNode root = new TreeNode(slow.val);
-            pre.next = null;    // 把链表一分为二
-            root.left = L_109_SortedListToBST(head);
-            root.right = L_109_SortedListToBST(slow.next);
+            TreeNode? root = null;
+            if (slow != null) root = new TreeNode(slow.val);
+            if (pre != null) pre.next = null;    // 把链表一分为二
+            if (root != null && slow != null)
+            {
+                root.left = L_109_SortedListToBST(head);
+                root.right = L_109_SortedListToBST(slow.next);
+            }
             return root;
         }
         /// <summary>
         /// leetcode第110题，平衡二叉树
-        /// 
+        /// https://leetcode.cn/problems/balanced-binary-tree/solution/zi-ding-xiang-xia-by-zyc-1r-53ca/
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public bool L_110_IsBalanced(TreeNode root)
+        public bool L_110_IsBalanced(TreeNode? root)
         {
             if (root == null)
                 return true;
@@ -3714,7 +3749,7 @@ namespace Yan
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public int L_111_MinDepth(TreeNode root)
+        public int L_111_MinDepth(TreeNode? root)
         {
             if (root == null)
             {
@@ -3856,7 +3891,7 @@ namespace Yan
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public Node L_116_Connect(Node root)
+        public Node? L_116_Connect(Node root)
         {
             if (root == null)
             {
@@ -3892,7 +3927,7 @@ namespace Yan
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        public Node L_117_Connect(Node root)
+        public Node? L_117_Connect(Node root)
         {
             if (root == null)
             {
@@ -4114,8 +4149,8 @@ namespace Yan
             }
             return true;
         }
-        
-        
+
+
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -4240,8 +4275,11 @@ namespace Yan
                 }
                 else
                 {
-                    last.next = new ListNode(val, null);
-                    last = last.next;
+                    if (last != null)
+                    {
+                        last.next = new ListNode(val, null);
+                        last = last.next;
+                    }
                 }
             }
             return res;
@@ -4262,7 +4300,7 @@ namespace Yan
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        private int MaxGain(TreeNode node)
+        private int MaxGain(TreeNode? node)
         {
             if (node == null)
             {
@@ -4288,7 +4326,7 @@ namespace Yan
         /// </summary>
         /// <param name="root"></param>
         /// <returns></returns>
-        private static int Height(TreeNode root)
+        private static int Height(TreeNode? root)
         {
             if (root == null)
                 return 0;
@@ -4324,7 +4362,7 @@ namespace Yan
         /// <param name="inStart"></param>
         /// <param name="len"></param>
         /// <returns></returns>
-        private TreeNode BuildTree(int[] preorder, int preleft, int preright, int inleft, int inright, Dictionary<int, int> h)
+        private TreeNode? BuildTree(int[] preorder, int preleft, int preright, int inleft, int inright, Dictionary<int, int> h)
         {
             if (preleft > preright || inleft > inright)
             {
