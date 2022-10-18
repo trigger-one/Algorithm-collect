@@ -4149,8 +4149,201 @@ namespace Yan
             }
             return true;
         }
+        /// <summary>
+        /// leetcode第126题，单词接龙Ⅱ
+        /// https://leetcode.cn/problems/word-ladder-ii/solution/yan-du-you-xian-jian-zhi-by-wu-ming-c8v-6ecp/
+        /// </summary>
+        /// <param name="beginWord"></param>
+        /// <param name="endWord"></param>
+        /// <param name="wordList"></param>
+        /// <returns></returns>
+        public IList<IList<string>> L_126_FindLadders(string beginWord, string endWord, IList<string> wordList)
+        {
+            var result = new List<IList<string>>();
+            var words = new HashSet<string>(wordList);
+            if (!words.Contains(endWord))
+            {
+                return result;
+            }
+            var wl = beginWord.Length - 1;
+            var que = new Queue<List<string>>();
+            que.Enqueue(new List<string> { beginWord });
+            while (result.Count == 0 && que.Count > 0)
+            {
+                var ignoreList = new List<string>();
+                for (int k = que.Count; k > 0; k--)
+                {
+                    var list = que.Dequeue();
+                    var arr = list[list.Count - 1].ToArray();
+                    for (int i = wl; i >= 0; i--)
+                    {
+                        var orignal = arr[i];
+                        for (char ch = 'a'; ch <= 'z'; ch++)
+                        {
+                            if (ch == orignal)
+                            {
+                                continue;
+                            }
+                            arr[i] = ch;
+                            var next = string.Join("", arr);
+                            if (words.Contains(next) && !list.Contains(next))
+                            {
+                                if (next == endWord)
+                                {
+                                    list.Add(next);
+                                    result.Add(list);
+                                }
+                                else
+                                {
+                                    var t = list.ToList();
+                                    t.Add(next);
+                                    que.Enqueue(t);
+                                    ignoreList.Add(next);
+                                }
+                            }
+                        }
+                        arr[i] = orignal;
+                    }
+                }
+                //剪枝
+                foreach (var item in ignoreList)
+                {
+                    words.Remove(item);
+                }
+            }
+            return result;
+        }
+        /// <summary>
+        /// leetcode第127题，单词接龙
+        /// https://leetcode.cn/problems/word-ladder/solution/by-stormsunshine-xvro/
+        /// </summary>
+        /// <param name="beginWord"></param>
+        /// <param name="endWord"></param>
+        /// <param name="wordList"></param>
+        /// <returns></returns>
+        public int L_127_LadderLength(string beginWord, string endWord, IList<string> wordList)
+        {
+            ISet<string> wordSet = new HashSet<string>();
+            foreach (string word in wordList)
+            {
+                wordSet.Add(word);
+            }
+            if (!wordSet.Contains(endWord))
+            {
+                return 0;
+            }
+            len = beginWord.Length;
+            ISet<string> visited = new HashSet<string>();
+            visited.Add(beginWord);
+            Queue<string> queue = new Queue<string>();
+            queue.Enqueue(beginWord);
+            int wordCount = 0;
+            while (queue.Count > 0)
+            {
+                wordCount++;
+                int size = queue.Count;
+                for (int i = 0; i < size; i++)
+                {
+                    string word = queue.Dequeue();
+                    if (word.Equals(endWord))
+                    {
+                        return wordCount;
+                    }
+                    IList<string> adjacentWords = GetAdjacentWords(word);
+                    foreach (string adjacent in adjacentWords)
+                    {
+                        if (wordSet.Contains(adjacent) && visited.Add(adjacent))
+                        {
+                            queue.Enqueue(adjacent);
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+        /// <summary>
+        /// leetcode第128题，最长连续序列
+        /// https://leetcode.cn/problems/longest-consecutive-sequence/solution/by-stormsunshine-2e55/
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public int L_128_LongestConsecutive(int[] nums)
+        {
+            ISet<int> set = new HashSet<int>();
+            foreach (int num in nums)
+            {
+                set.Add(num);
+            }
+            int maxLength = 0;
+            foreach (int num in set)
+            {
+                if (set.Contains(num - 1))
+                {
+                    continue;
+                }
+                int maxNum = num;
+                while (set.Contains(maxNum + 1))
+                {
+                    maxNum++;
+                }
+                maxLength = Math.Max(maxLength, maxNum - num + 1);
+            }
+            return maxLength;
+        }
+        /// <summary>
+        /// leetcode第129题，求根节点到叶节点数字之和
+        /// https://leetcode.cn/problems/sum-root-to-leaf-numbers/solution/po-su-ru-he-zai-sou-suo-de-guo-cheng-zhong-qiu-jie/
+        /// </summary>
+        /// <param name="root"></param>
+        /// <returns></returns>
+        public int L_129_SumNumbers(TreeNode? root)
+        {
+            if (root is null) return 0;
+            if (root.left is null && root.right is null) return len * 10 + root.val; // 找到叶子节点
 
-
+            len = len * 10 + root.val;
+            int res = L_129_SumNumbers(root.left) + L_129_SumNumbers(root.right);
+            len /= 10; // 撤销
+            return res;
+        }
+        /// <summary>
+        /// leetcode第130题，被围绕的区域
+        /// https://leetcode.cn/problems/surrounded-regions/solution/su-hui-cong-zhi-dao-zu-qie-chang-by-shou-5o8o/
+        /// </summary>
+        /// <param name="board"></param>
+        public void L_130_Solve(char[][] board)
+        {
+            int m = board.Length;
+            int n = board[0].Length;
+            void DFS(int i, int j)
+            {
+                if (i < 0 || i >= m || j < 0 || j >= n) return;
+                if (board[i][j] != 'O') return;
+                board[i][j] = '#';
+                DFS(i + 1, j);
+                DFS(i, j + 1);
+                DFS(i - 1, j);
+                DFS(i, j - 1);
+            }
+            for (int i = 0; i < m; i++)
+            {
+                DFS(i, 0); DFS(i, n - 1);
+            }
+            for (int i = 0; i < n; i++)
+            {
+                DFS(0, i); DFS(m - 1, i);
+            }
+            for (int i = 0; i < m; i++)
+                for (int j = 0; j < n; j++)
+                    if (board[i][j] == 'O')
+                        board[i][j] = 'X';
+            for (int i = 0; i < m; i++)
+                for (int j = 0; j < n; j++)
+                    if (board[i][j] == '#')
+                        board[i][j] = 'O';
+        }
+        
+        
         //TODO待添加算法处
         /// <summary>
         /// 斐波那契(迭代法)
@@ -4295,6 +4488,31 @@ namespace Yan
         }
 
 
+        /// <summary>
+        /// 于L_127_LadderLength中调用
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        private IList<string> GetAdjacentWords(string word)
+        {
+            IList<string> adjacentWords = new List<string>();
+            char[] arr = word.ToCharArray();
+            for (int i = 0; i < len; i++)
+            {
+                char original = arr[i];
+                for (char c = 'a'; c <= 'z'; c++)
+                {
+                    if (c == original)
+                    {
+                        continue;
+                    }
+                    arr[i] = c;
+                    adjacentWords.Add(new string(arr));
+                }
+                arr[i] = original;
+            }
+            return adjacentWords;
+        }
         /// <summary>
         /// 于L_124_MaxPathSum中调用
         /// </summary>
