@@ -33,20 +33,40 @@ namespace Yan
         public Node? left;
         public Node? right;
         public Node? next;
-
         public Node() { }
-
         public Node(int _val)
         {
             val = _val;
         }
-
         public Node(int _val, Node _left, Node _right, Node _next)
         {
             val = _val;
             left = _left;
             right = _right;
             next = _next;
+        }
+    }
+    public class Node2
+    {
+        public int val;
+        public IList<Node2> neighbors;
+
+        public Node2()
+        {
+            val = 0;
+            neighbors = new List<Node2>();
+        }
+
+        public Node2(int _val)
+        {
+            val = _val;
+            neighbors = new List<Node2>();
+        }
+
+        public Node2(int _val, List<Node2> _neighbors)
+        {
+            val = _val;
+            neighbors = _neighbors;
         }
     }
     public class Algorithm
@@ -4342,6 +4362,163 @@ namespace Yan
                     if (board[i][j] == '#')
                         board[i][j] = 'O';
         }
+        /// <summary>
+        /// leetcode第131题，分割回文串
+        /// https://leetcode.cn/problems/palindrome-partitioning/solution/c-by-miaomiaomiaomiao-cq31/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public IList<IList<string>> L_131_Partition(string s)
+        {
+            int n = s.Length;
+            var dp = new Boolean[n][];
+            for (int i = 0; i < dp.Length; i++)
+                dp[i] = new Boolean[n];
+            for (int y = 0; y < dp.Length; y++)
+                for (int x = 0; x < dp.Length; x++)
+                    if (y >= x)
+                        dp[y][x] = true;
+            for (int y = dp.Length - 1; y >= 0; y--)
+                for (int x = dp.Length - 1; x >= 0; x--)
+                {
+                    if (y >= x) continue;
+                    dp[y][x] = (s[x] == s[y] && dp[y + 1][x - 1]);
+                }
+            var result = new List<IList<string>>();
+            var lists = DFS(dp, s, 0);
+            result.AddRange(lists);
+            return result;
+        }
+        /// <summary>
+        /// leetcode第132题，分割回文串Ⅱ
+        /// https://leetcode.cn/problems/palindrome-partitioning-ii/solution/by-dreamy-lehmannggf-7uww/
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public int L_132_MinCut(string s)
+        {
+            int n = s.Length;
+            int[] cut = new int[n + 1];
+
+            //赋初值，最多的情况是按单个字符切分, cut[0]设为-1
+            for (int i = 0; i <= n; i++) cut[i] = i - 1;
+
+            for (int i = 0; i < n; i++)
+            {
+                //以i为中心扩展，回文串字符数为奇数
+                for (int j = 0; i - j >= 0 && i + j < n && s[i - j] == s[i + j]; j++)
+                {
+                    //当s[i-j]到s[i+j]是个回文字符串时 cut[i - j] + 1 是 cut[i + j + 1] 的候选之一
+                    cut[i + j + 1] = Math.Min(cut[i + j + 1], cut[i - j] + 1);
+                }
+                //以i和i+1之间的间隔为中心扩展，回文串字符数为偶数
+                for (int j = 0; i - j >= 0 && i + 1 + j < n && s[i - j] == s[i + 1 + j]; j++)
+                {
+                    cut[i + j + 2] = Math.Min(cut[i + j + 2], cut[i - j] + 1);
+                }
+            }
+            return cut[n];
+        }
+        /// <summary>
+        /// leetcode第133题，克隆图
+        /// https://leetcode.cn/problems/clone-graph/solution/by-stormsunshine-9rhg/
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public Node2 L_133_CloneGraph(Node2 node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+            IDictionary<Node2, Node2> cloneDictionary = new Dictionary<Node2, Node2>();
+            cloneDictionary.Add(node, new Node2(node.val));
+            Queue<Node2> queue = new Queue<Node2>();
+            queue.Enqueue(node);
+            while (queue.Count > 0)
+            {
+                Node2 original = queue.Dequeue();
+                Node2 cloned = cloneDictionary[original];
+                IList<Node2> originalNeighbors = original.neighbors;
+                IList<Node2> clonedNeighbors = cloned.neighbors;
+                foreach (Node2 originalNeighbor in originalNeighbors)
+                {
+                    if (!cloneDictionary.ContainsKey(originalNeighbor))
+                    {
+                        cloneDictionary.Add(originalNeighbor, new Node2(originalNeighbor.val));
+                        queue.Enqueue(originalNeighbor);
+                    }
+                    clonedNeighbors.Add(cloneDictionary[originalNeighbor]);
+                }
+            }
+            return cloneDictionary[node];
+        }
+        /// <summary>
+        /// leetcode第134题，加油站
+        /// https://leetcode.cn/problems/gas-station/solution/by-iceream-c91i/
+        /// </summary>
+        /// <param name="gas"></param>
+        /// <param name="cost"></param>
+        /// <returns></returns>
+        public int L_134_CanCompleteCircuit(int[] gas, int[] cost)
+        {
+            int min = gas[0]; //先定义最小含油量为未出发时
+            int sum = 0; //定义当前含油量
+            int index = 0; //定义含油量最低时候的索引值
+            for (int i = 0; i < gas.Length; i++)
+            {
+                sum += (gas[i] - cost[i]); //更新含油量
+                if (sum <= min) index = i; //令index为最小含油量处的索引
+                min = Math.Min(min, sum);  // 更新最小含油量
+
+            }
+            if (sum < 0) return -1; //can not get
+            if (min >= 0) return 0; // can get
+            return index + 1; //其实上面不用那个return 0 ，习惯
+        }
+        /// <summary>
+        /// leetcode第135题，分发糖果
+        /// https://leetcode.cn/problems/candy/solution/jie-by-long-yu-8-ddh8/
+        /// </summary>
+        /// <param name="ratings"></param>
+        /// <returns></returns>
+        public int L_135_Candy(int[] ratings)
+        {
+            //从左到右，从右到左两次遍历
+            //以[1 3 2 1 1 2 1]为例
+            int n = ratings.Length;
+            int[] left = new int[n];//定义数组存储第一次遍历结果，left下标和ratings的下标一致
+            for (int i = 0; i < n; i++)
+            {
+                if (i > 0 && ratings[i] > ratings[i - 1])//判断i与前i-1的值，i>i-1，left[i]就等于left[i-1]的值+1，
+                {
+                    left[i] = left[i - 1] + 1;
+                }
+                else//如果小于，left[i]置为1
+                {
+                    left[i] = 1;
+                }
+            }//最后结果为left[1,2,1,1,1,2,1]
+
+            int right = 0, ret = 0;//从右到左遍历
+            for (int i = n - 1; i >= 0; i--)
+            {
+                if (i < n - 1 && ratings[i] > ratings[i + 1])//判断i与i+1的值，
+                {
+                    right++;//i的值>i+1的值，right+1;
+                }
+                else
+                {
+                    right = 1;//right置为1
+                }
+                //从右到左
+                //right   1,3,2,1,1,2,1
+                //left    1,2,1,1,1,2,1
+                //结果    1,3,2,1,1,2,1
+                ret += Math.Max(left[i], right);
+            }
+            return ret;
+        }
         
         
         //TODO待添加算法处
@@ -4684,6 +4861,46 @@ namespace Yan
             return ans;
         }
         /// <summary>
+        /// 于L_131_Partition中调用
+        /// </summary>
+        /// <param name="dp"></param>
+        /// <param name="s"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
+        private List<List<string>> DFS(bool[][] dp, string s, int startIndex)
+        {
+            var results = new List<List<string>>();
+            if (s.Length - startIndex == 1)
+            {
+                var list = new List<string>();
+                list.Add(s.Substring(startIndex, 1));
+                results.Add(list);
+                return results;
+            }
+            if (s.Length - startIndex < 1)
+            {
+                var list = new List<string>();
+                results.Add(list);
+                return results;
+            }
+
+            for (int i = startIndex; i < s.Length; i++)
+            {
+                if (dp[startIndex][i])
+                {
+                    String str = s.Substring(startIndex, i - startIndex + 1);
+                    var lists = DFS(dp, s, i + 1);
+                    foreach (var list in lists)
+                    {
+                        list.Insert(0, str);
+                    }
+                    results.AddRange(lists);
+                }
+            }
+
+            return results;
+        }
+        /// <summary>
         /// 于L_52_TotalNQueens中调用
         /// </summary>
         private void DFS(int row, int col, int pie, int na, int n)
@@ -4731,7 +4948,7 @@ namespace Yan
         /// <param name="n"></param>
         /// <param name="flag"></param>
         /// <param name="ret"></param>
-        public void DFS(int[] arr, int deep, int n, bool[] flag, IList<TreeNode> ret)
+        private void DFS(int[] arr, int deep, int n, bool[] flag, IList<TreeNode> ret)
         {
             if (deep == n)
             {
